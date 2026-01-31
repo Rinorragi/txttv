@@ -3,8 +3,16 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+# Azure Functions
+local.settings.json
+.azure/
+
+# Bicep
+*.json.arm
+
 # dotenv files
 .env
+.env.*
 
 # User-specific files
 *.rsuser

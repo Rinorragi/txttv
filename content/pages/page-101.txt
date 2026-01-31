@@ -1,0 +1,24 @@
+TECHNOLOGY NEWS
+===============
+
+Azure API Management Updates
+----------------------------
+Microsoft has released new capabilities for
+Azure API Management, including enhanced
+policy fragment support and improved WAF
+integration through Application Gateway.
+
+Cloud Development Trends
+------------------------
+Serverless architectures continue to grow
+with Azure Functions leading the way for
+event-driven computing solutions.
+
+F# Language Evolution
+---------------------
+The .NET 10 release brings new features
+to F# developers, improving performance
+and developer productivity.
+
+---
+More news on page 102 →

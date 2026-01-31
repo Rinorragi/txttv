@@ -1,0 +1,118 @@
+<!--
+    Page Routing Policy for TXT TV
+    
+    This policy handles the GET /page/{pageNumber} operation.
+    It extracts the page number from the URL and renders the appropriate
+    policy fragment containing the page content.
+    
+    Implementation: APIM policy-based HTML rendering (not backend call)
+-->
+<policies>
+    <inbound>
+        <base />
+        
+        <!-- Extract page number from route -->
+        <set-variable name="pageNumber" value="@(context.Request.MatchedParameters["pageNumber"])" />
+        
+        <!-- Validate page number is a valid integer between 100-999 -->
+        <choose>
+            <when condition="@{
+                string pageStr = (string)context.Variables["pageNumber"];
+                int page;
+                if (!int.TryParse(pageStr, out page)) return true;
+                if (page < 100 || page > 999) return true;
+                return false;
+            }">
+                <return-response>
+                    <set-status code="400" reason="Bad Request" />
+                    <set-header name="Content-Type" exists-action="override">
+                        <value>application/json</value>
+                    </set-header>
+                    <set-body>@{
+                        var pageNumber = context.Variables.GetValueOrDefault<string>("pageNumber", "unknown");
+                        return new JObject(
+                            new JProperty("error", "Invalid page number"),
+                            new JProperty("message", "Page number must be an integer between 100 and 999"),
+                            new JProperty("requestedValue", pageNumber)
+                        ).ToString();
+                    }</set-body>
+                </return-response>
+            </when>
+        </choose>
+        
+        <!-- Calculate navigation page numbers -->
+        <set-variable name="currentPage" value="@(int.Parse((string)context.Variables["pageNumber"]))" />
+        <set-variable name="previousPage" value="@((int)context.Variables["currentPage"] - 1)" />
+        <set-variable name="nextPage" value="@((int)context.Variables["currentPage"] + 1)" />
+        
+        <!-- Log page view -->
+        <trace source="TxtTV-PageRouting" severity="information">
+            <message>@($"Page view: {context.Variables["pageNumber"]}")</message>
+            <metadata name="pageNumber" value="@((string)context.Variables["pageNumber"])" />
+        </trace>
+        
+        <!-- Route to appropriate page fragment based on page number -->
+        <choose>
+            <when condition="@(context.Variables["pageNumber"].ToString() == "100")">
+                <include-fragment fragment-id="page-100" />
+            </when>
+            <when condition="@(context.Variables["pageNumber"].ToString() == "101")">
+                <include-fragment fragment-id="page-101" />
+            </when>
+            <when condition="@(context.Variables["pageNumber"].ToString() == "102")">
+                <include-fragment fragment-id="page-102" />
+            </when>
+            <when condition="@(context.Variables["pageNumber"].ToString() == "103")">
+                <include-fragment fragment-id="page-103" />
+            </when>
+            <when condition="@(context.Variables["pageNumber"].ToString() == "104")">
+                <include-fragment fragment-id="page-104" />
+            </when>
+            <when condition="@(context.Variables["pageNumber"].ToString() == "105")">
+                <include-fragment fragment-id="page-105" />
+            </when>
+            <when condition="@(context.Variables["pageNumber"].ToString() == "106")">
+                <include-fragment fragment-id="page-106" />
+            </when>
+            <when condition="@(context.Variables["pageNumber"].ToString() == "107")">
+                <include-fragment fragment-id="page-107" />
+            </when>
+            <when condition="@(context.Variables["pageNumber"].ToString() == "108")">
+                <include-fragment fragment-id="page-108" />
+            </when>
+            <when condition="@(context.Variables["pageNumber"].ToString() == "109")">
+                <include-fragment fragment-id="page-109" />
+            </when>
+            <when condition="@(context.Variables["pageNumber"].ToString() == "110")">
+                <include-fragment fragment-id="page-110" />
+            </when>
+            <otherwise>
+                <!-- Page not found - show error page -->
+                <include-fragment fragment-id="error-page" />
+            </otherwise>
+        </choose>
+        
+        <!-- Return the rendered HTML response -->
+        <return-response>
+            <set-status code="200" reason="OK" />
+            <set-header name="Content-Type" exists-action="override">
+                <value>text/html; charset=utf-8</value>
+            </set-header>
+            <set-header name="Cache-Control" exists-action="override">
+                <value>public, max-age=300</value>
+            </set-header>
+        </return-response>
+    </inbound>
+    
+    <backend>
+        <!-- No backend call - response is generated entirely by policy -->
+    </backend>
+    
+    <outbound>
+        <base />
+    </outbound>
+    
+    <on-error>
+        <base />
+    </on-error>
+</policies>

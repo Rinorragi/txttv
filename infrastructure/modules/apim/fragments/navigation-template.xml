@@ -1,0 +1,30 @@
+<!--
+    Navigation Template Fragment for TXT TV
+    
+    This fragment provides the navigation HTML template.
+    Note: In APIM, variable substitution happens in the policy context.
+    This template is included by page fragments for consistent navigation.
+-->
+<fragment>
+    <set-body template="liquid"><![CDATA[
+    <nav>
+        <button hx-get="/page/{{context.Variables["previousPage"]}}" 
+                hx-target="body" 
+                hx-push-url="true"
+                {% if context.Variables["currentPage"] <= 100 %}disabled{% endif %}>
+            &#9664; Previous
+        </button>
+        <input type="number" id="pageNum" 
+               value="{{context.Variables["currentPage"]}}" 
+               min="100" max="999" />
+        <button onclick="htmx.ajax('GET', '/page/' + document.getElementById('pageNum').value, {target: 'body', pushUrl: true});">
+            Go to Page
+        </button>
+        <button hx-get="/page/{{context.Variables["nextPage"]}}" 
+                hx-target="body" 
+                hx-push-url="true">
+            Next &#9654;
+        </button>
+    </nav>
+    ]]></set-body>
+</fragment>

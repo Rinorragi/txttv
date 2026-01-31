@@ -1,0 +1,78 @@
+<!--
+    Backend Policy for TXT TV
+    
+    This policy handles the GET /backend-test operation.
+    It forwards the request to the F# Azure Function backend
+    and returns the "you found through the maze" message.
+    
+    This demonstrates the complete security stack:
+    Client -> Application Gateway (WAF) -> APIM -> Azure Functions
+-->
+<policies>
+    <inbound>
+        <base />
+        
+        <!-- Set correlation ID for tracing -->
+        <set-variable name="correlationId" value="@(context.RequestId.ToString())" />
+        <set-header name="X-Correlation-ID" exists-action="override">
+            <value>@((string)context.Variables["correlationId"])</value>
+        </set-header>
+        
+        <!-- Log backend call attempt -->
+        <trace source="TxtTV-BackendTest" severity="information">
+            <message>Calling backend function</message>
+            <metadata name="correlationId" value="@((string)context.Variables["correlationId"])" />
+        </trace>
+        
+        <!-- Set backend service to Azure Functions -->
+        <set-backend-service base-url="{{function-backend-url}}" />
+        
+        <!-- Rewrite to Azure Functions route -->
+        <rewrite-uri template="/api/backend-test" />
+    </inbound>
+    
+    <backend>
+        <forward-request timeout="10" follow-redirects="true" />
+    </backend>
+    
+    <outbound>
+        <base />
+        
+        <!-- Add header to indicate backend was called -->
+        <set-header name="X-Backend-Called" exists-action="override">
+            <value>true</value>
+        </set-header>
+        
+        <!-- Log successful backend response -->
+        <trace source="TxtTV-BackendTest" severity="information">
+            <message>@($"Backend response: {context.Response.StatusCode}")</message>
+            <metadata name="correlationId" value="@((string)context.Variables["correlationId"])" />
+            <metadata name="responseTime" value="@(context.Elapsed.TotalMilliseconds.ToString())" />
+        </trace>
+    </outbound>
+    
+    <on-error>
+        <base />
+        
+        <!-- Log backend error -->
+        <trace source="TxtTV-BackendTest" severity="error">
+            <message>@($"Backend error: {context.LastError.Message}")</message>
+            <metadata name="correlationId" value="@((string)context.Variables.GetValueOrDefault("correlationId", context.RequestId.ToString()))" />
+        </trace>
+        
+        <!-- Return 503 Service Unavailable for backend errors -->
+        <return-response>
+            <set-status code="503" reason="Service Unavailable" />
+            <set-header name="Content-Type" exists-action="override">
+                <value>application/json</value>
+            </set-header>
+            <set-body>@{
+                return new JObject(
+                    new JProperty("error", "Backend unavailable"),
+                    new JProperty("message", "The backend function is not responding"),
+                    new JProperty("correlationId", context.Variables.GetValueOrDefault<string>("correlationId", context.RequestId.ToString()))
+                ).ToString();
+            }</set-body>
+        </return-response>
+    </on-error>
+</policies>

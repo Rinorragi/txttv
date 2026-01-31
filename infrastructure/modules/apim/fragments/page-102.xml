@@ -1,0 +1,121 @@
+<fragment>
+    <set-body><![CDATA[<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TXT TV - Page 102</title>
+    <style>
+body {
+    background-color: #000;
+    color: #0f0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    line-height: 1.4;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+}
+.header {
+    background-color: #00f;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.page-number {
+    color: #ff0;
+    font-weight: bold;
+}
+.content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-bottom: 20px;
+}
+nav {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    background-color: #333;
+    flex-wrap: wrap;
+}
+button {
+    background-color: #00f;
+    color: #fff;
+    border: 2px solid #0ff;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+}
+button:hover:not(:disabled) {
+    background-color: #0ff;
+    color: #000;
+}
+button:disabled {
+    background-color: #555;
+    color: #888;
+    cursor: not-allowed;
+    border-color: #666;
+}
+input[type="number"] {
+    background-color: #000;
+    color: #0f0;
+    border: 2px solid #0ff;
+    padding: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    width: 80px;
+}
+.htmx-request {
+    opacity: 0.5;
+}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span class="page-number">PAGE 102</span> - TXT TV
+    </div>
+    <div id="content">
+        <pre class="content">WEATHER FORECAST
+================
+
+Today's Weather
+---------------
+Partly cloudy with occasional sunshine.
+High: 15C / Low: 8C
+Wind: Light breeze from the west
+
+Tomorrow
+--------
+Mostly sunny with clear skies expected.
+High: 18C / Low: 10C
+Excellent conditions for outdoor activities.
+
+Weekend Outlook
+---------------
+Saturday: Warm and sunny, 20C
+Sunday: Chance of light rain, 16C
+
+---
+UV Index: Moderate
+Humidity: 65%
+Sunrise: 06:45 | Sunset: 20:30
+
+← Back to headlines on page 100
+</pre>
+    </div>
+    <nav>
+        <button hx-get="/page/101" hx-target="body" hx-push-url="true" >&#9664; Previous</button>
+        <input type="number" id="pageNum" value="102" min="100" max="999" />
+        <button hx-get="/page/{pageNum}" hx-include="#pageNum" hx-target="body" hx-push-url="true" 
+                onclick="this.setAttribute('hx-get', '/page/' + document.getElementById('pageNum').value); htmx.process(this);">
+            Go to Page
+        </button>
+        <button hx-get="/page/103" hx-target="body" hx-push-url="true">Next &#9654;</button>
+    </nav>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</body>
+</html>]]></set-body>
+</fragment>

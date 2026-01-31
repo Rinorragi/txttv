@@ -1,0 +1,55 @@
+{
+  "name": "get-page",
+  "displayName": "Get Page",
+  "description": "Retrieve and render a specific TXT TV page by page number. The page content is rendered by APIM policy fragments.",
+  "method": "GET",
+  "urlTemplate": "/page/{pageNumber}",
+  "templateParameters": [
+    {
+      "name": "pageNumber",
+      "type": "integer",
+      "required": true,
+      "description": "Page number to retrieve (100-999)"
+    }
+  ],
+  "request": {
+    "description": "Request to view a specific TXT TV page"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "HTML page content rendered by APIM policy fragment",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "type": "string",
+          "values": ["text/html; charset=utf-8"]
+        },
+        {
+          "name": "Cache-Control",
+          "type": "string",
+          "values": ["public, max-age=300"]
+        },
+        {
+          "name": "X-Correlation-ID",
+          "type": "string",
+          "description": "Request correlation ID for tracing"
+        }
+      ]
+    },
+    {
+      "statusCode": 400,
+      "description": "Invalid page number (not an integer or outside 100-999 range)",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "type": "string",
+          "values": ["application/json"]
+        }
+      ]
+    }
+  ],
+  "policies": {
+    "inbound": "page-routing-policy.xml"
+  }
+}

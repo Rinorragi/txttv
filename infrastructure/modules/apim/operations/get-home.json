@@ -1,0 +1,26 @@
+{
+  "name": "get-home",
+  "displayName": "Get Home",
+  "description": "Redirect to the default TXT TV page (page 100)",
+  "method": "GET",
+  "urlTemplate": "/",
+  "request": {
+    "description": "Request to access the TXT TV home page"
+  },
+  "responses": [
+    {
+      "statusCode": 302,
+      "description": "Redirect to /page/100",
+      "headers": [
+        {
+          "name": "Location",
+          "type": "string",
+          "values": ["/page/100"]
+        }
+      ]
+    }
+  ],
+  "policies": {
+    "inbound": "<return-response><set-status code=\"302\" reason=\"Found\" /><set-header name=\"Location\" exists-action=\"override\"><value>/page/100</value></set-header></return-response>"
+  }
+}
