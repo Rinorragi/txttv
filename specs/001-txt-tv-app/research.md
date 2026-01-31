@@ -124,12 +124,22 @@ This document captures research findings and technology decisions for implementi
 # convert-txt-to-fragment.ps1
 param(
     [string]$SourceDir = "content/pages",
-    [string]$OutputDir = "infrastructure/modules/apim/fragments"
+    [string]$OutputDir = "infrastructure/modules/apim/fragments",
+    [int]$MaxCharacters = 2000
 )
 
 Get-ChildItem "$SourceDir/*.txt" | ForEach-Object {
     $pageNumber = $_.BaseName -replace 'page-', ''
-    $content = Get-Content $_.FullName -Raw
+    $content = Get-Content $_.FullName -Raw -Encoding UTF8
+    
+    # Validate character limit per FR-013 and data model constraint
+    if ($content.Length -gt $MaxCharacters) {
+        Write-Error "Page $pageNumber exceeds $MaxCharacters character limit ($($content.Length) chars)"
+        return
+    }
+    
+    # Escape XML-unsafe characters
+    $content = $content -replace '&', '&amp;' -replace '<', '&lt;' -replace '>', '&gt;'
     
     $fragmentXml = @"
 <fragment>

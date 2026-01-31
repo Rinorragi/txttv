@@ -71,10 +71,11 @@ Using **APIM Policy-Centric** structure:
 - [ ] T018 [P] [US1] Create sample content file content/pages/page-100.txt with breaking news
 - [ ] T019 [P] [US1] Create sample content file content/pages/page-101.txt with technology news
 - [ ] T020 [P] [US1] Create sample content file content/pages/page-102.txt with weather news
-- [ ] T021 [US1] Implement PowerShell conversion script to generate policy fragments from text files
-- [ ] T022 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-100.xml
-- [ ] T023 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-101.xml
-- [ ] T024 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-102.xml
+- [ ] T021 [US1] Implement PowerShell conversion script to generate policy fragments from text files (include 2000 character limit validation per FR-013)
+- [ ] T021b [US1] Validate generated policy fragments: XML schema check, 2000 char limit enforcement, HTML syntax validation
+- [ ] T022 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-100.xml (initial manual run for MVP; T050 automates in CI/CD)
+- [ ] T023 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-101.xml (initial manual run for MVP; T050 automates in CI/CD)
+- [ ] T024 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-102.xml (initial manual run for MVP; T050 automates in CI/CD)
 - [ ] T025 [US1] Create error page fragment infrastructure/modules/apim/fragments/error-page.xml
 - [ ] T026 [US1] Create navigation template fragment infrastructure/modules/apim/fragments/navigation-template.xml with HTMX attributes
 - [ ] T027 [US1] Add inline teletext CSS to fragments (monospace font, black background, green text, blue header)
@@ -183,6 +184,7 @@ Using **APIM Policy-Centric** structure:
 - [ ] T082 Document rollback procedure in quickstart.md
 - [ ] T083 Add performance testing results to plan.md (verify <1s navigation, <2s page load)
 - [ ] T084 Create demo video or screenshot of working application
+- [ ] T085 [P] Add page number bounds validation task: Validate APIM policy rejects page numbers <100 or >999 per FR-013; add Pester test for edge cases (99, 1000)
 
 ---
 
@@ -265,17 +267,17 @@ Phase 1 (Setup)
 
 - **Phase 1 (Setup)**: 5 tasks
 - **Phase 2 (Foundational)**: 12 tasks (blocking)
-- **Phase 3 (US1)**: 16 tasks (MVP)
+- **Phase 3 (US1)**: 17 tasks (MVP) — includes T021b validation
 - **Phase 4 (US2)**: 12 tasks
 - **Phase 5 (US3)**: 10 tasks
 - **Phase 6 (US4)**: 14 tasks
-- **Phase 7 (Polish)**: 15 tasks
+- **Phase 7 (Polish)**: 16 tasks — includes T085 bounds validation
 
-**Total**: 84 tasks
+**Total**: 86 tasks
 
-**Parallel opportunities**: 34 tasks marked [P] can run in parallel within their phase
+**Parallel opportunities**: 35 tasks marked [P] can run in parallel within their phase
 
-**Estimated MVP effort**: 33 tasks (Phase 1 + Phase 2 + Phase 3)
+**Estimated MVP effort**: 34 tasks (Phase 1 + Phase 2 + Phase 3)
 
 ---
 
