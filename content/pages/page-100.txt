@@ -1,0 +1,20 @@
+BREAKING NEWS - Welcome to TXT TV
+===================================
+
+TXT TV - Your text-based news service
+
+This is a demonstration of Azure API Management
+policy-based HTML rendering, protected by
+Application Gateway WAF.
+
+HEADLINES:
+----------
+* Technology news on page 101
+* Weather forecast on page 102
+* Sports updates on page 103
+
+Navigate using the arrows below or enter
+a page number directly.
+
+---
+TXT TV - Powered by Azure APIM

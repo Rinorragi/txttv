@@ -1,0 +1,47 @@
+{
+  "name": "get-backend-test",
+  "displayName": "Backend Test",
+  "description": "Test endpoint that calls the F# Azure Function backend through APIM. Returns 'you found through the maze' message if successful.",
+  "method": "GET",
+  "urlTemplate": "/backend-test",
+  "request": {
+    "description": "Request to test backend connectivity through WAF and APIM"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "Backend confirmation message",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "type": "string",
+          "values": ["text/plain; charset=utf-8"]
+        },
+        {
+          "name": "X-Correlation-ID",
+          "type": "string",
+          "description": "Request correlation ID for tracing"
+        },
+        {
+          "name": "X-Backend-Called",
+          "type": "string",
+          "values": ["true"]
+        }
+      ]
+    },
+    {
+      "statusCode": 503,
+      "description": "Backend unavailable or timeout",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "type": "string",
+          "values": ["application/json"]
+        }
+      ]
+    }
+  ],
+  "policies": {
+    "inbound": "backend-policy.xml"
+  }
+}

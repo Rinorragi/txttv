@@ -1,0 +1,26 @@
+WEATHER FORECAST
+================
+
+Today's Weather
+---------------
+Partly cloudy with occasional sunshine.
+High: 15C / Low: 8C
+Wind: Light breeze from the west
+
+Tomorrow
+--------
+Mostly sunny with clear skies expected.
+High: 18C / Low: 10C
+Excellent conditions for outdoor activities.
+
+Weekend Outlook
+---------------
+Saturday: Warm and sunny, 20C
+Sunday: Chance of light rain, 16C
+
+---
+UV Index: Moderate
+Humidity: 65%
+Sunrise: 06:45 | Sunset: 20:30
+
+← Back to headlines on page 100

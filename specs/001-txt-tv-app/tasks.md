@@ -29,11 +29,11 @@ Using **APIM Policy-Centric** structure:
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create directory structure per implementation plan (infrastructure/, src/, content/, tests/)
-- [ ] T002 Initialize .NET 10 F# Azure Functions project in src/backend/TxtTv.Functions/
-- [ ] T003 [P] Create PowerShell script infrastructure/scripts/convert-txt-to-fragment.ps1
-- [ ] T004 [P] Create GitHub Actions workflow file .github/workflows/deploy.yml
-- [ ] T005 [P] Create .gitignore for Azure Functions and Bicep outputs
+- [X] T001 Create directory structure per implementation plan (infrastructure/, src/, content/, tests/)
+- [X] T002 Initialize .NET 10 F# Azure Functions project in src/backend/TxtTv.Functions/
+- [X] T003 [P] Create PowerShell script infrastructure/scripts/convert-txt-to-fragment.ps1
+- [X] T004 [P] Create GitHub Actions workflow file .github/workflows/deploy.yml
+- [X] T005 [P] Create .gitignore for Azure Functions and Bicep outputs
 
 ---
 
@@ -43,17 +43,17 @@ Using **APIM Policy-Centric** structure:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Create Bicep module infrastructure/modules/storage/main.bicep for Azure Blob Storage
-- [ ] T007 Create Bicep module infrastructure/modules/backend/main.bicep for Azure Functions
-- [ ] T008 Create Bicep module infrastructure/modules/apim/main.bicep for API Management (Consumption tier)
-- [ ] T009 Create Bicep module infrastructure/modules/app-gateway/main.bicep for Application Gateway
-- [ ] T010 Create Bicep module infrastructure/modules/waf/main.bicep for WAF policy with OWASP CRS 3.2
-- [ ] T011 Create dev environment orchestration infrastructure/environments/dev/main.bicep
-- [ ] T012 Create dev environment parameters infrastructure/environments/dev/parameters.json
-- [ ] T013 [P] Add rate limiting rule in infrastructure/modules/waf/rules/rate-limiting.bicep (100 req/min per IP)
-- [ ] T014 [P] Add SQL injection protection rule in infrastructure/modules/waf/rules/sql-injection.bicep
-- [ ] T015 [P] Add XSS protection rule in infrastructure/modules/waf/rules/xss-protection.bicep
-- [ ] T016 Create global APIM policy infrastructure/modules/apim/policies/global-policy.xml (logging, CORS, security headers)
+- [X] T006 Create Bicep module infrastructure/modules/storage/main.bicep for Azure Blob Storage
+- [X] T007 Create Bicep module infrastructure/modules/backend/main.bicep for Azure Functions
+- [X] T008 Create Bicep module infrastructure/modules/apim/main.bicep for API Management (Consumption tier)
+- [X] T009 Create Bicep module infrastructure/modules/app-gateway/main.bicep for Application Gateway
+- [X] T010 Create Bicep module infrastructure/modules/waf/main.bicep for WAF policy with OWASP CRS 3.2
+- [X] T011 Create dev environment orchestration infrastructure/environments/dev/main.bicep
+- [X] T012 Create dev environment parameters infrastructure/environments/dev/parameters.json
+- [X] T013 [P] Add rate limiting rule in infrastructure/modules/waf/rules/rate-limiting.bicep (100 req/min per IP)
+- [X] T014 [P] Add SQL injection protection rule in infrastructure/modules/waf/rules/sql-injection.bicep
+- [X] T015 [P] Add XSS protection rule in infrastructure/modules/waf/rules/xss-protection.bicep
+- [X] T016 Create global APIM policy infrastructure/modules/apim/policies/global-policy.xml (logging, CORS, security headers)
 - [ ] T017 Deploy dev environment infrastructure to Azure (creates all resources)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
@@ -68,21 +68,21 @@ Using **APIM Policy-Centric** structure:
 
 ### Implementation for User Story 1
 
-- [ ] T018 [P] [US1] Create sample content file content/pages/page-100.txt with breaking news
-- [ ] T019 [P] [US1] Create sample content file content/pages/page-101.txt with technology news
-- [ ] T020 [P] [US1] Create sample content file content/pages/page-102.txt with weather news
-- [ ] T021 [US1] Implement PowerShell conversion script to generate policy fragments from text files (include 2000 character limit validation per FR-013)
-- [ ] T021b [US1] Validate generated policy fragments: XML schema check, 2000 char limit enforcement, HTML syntax validation
-- [ ] T022 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-100.xml (initial manual run for MVP; T050 automates in CI/CD)
-- [ ] T023 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-101.xml (initial manual run for MVP; T050 automates in CI/CD)
-- [ ] T024 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-102.xml (initial manual run for MVP; T050 automates in CI/CD)
-- [ ] T025 [US1] Create error page fragment infrastructure/modules/apim/fragments/error-page.xml
-- [ ] T026 [US1] Create navigation template fragment infrastructure/modules/apim/fragments/navigation-template.xml with HTMX attributes
-- [ ] T027 [US1] Add inline teletext CSS to fragments (monospace font, black background, green text, blue header)
-- [ ] T028 [US1] Create page routing policy infrastructure/modules/apim/policies/page-routing-policy.xml with choose/when conditions
-- [ ] T029 [US1] Create APIM operation definition infrastructure/modules/apim/operations/get-page.json for GET /page/{pageNumber}
-- [ ] T030 [US1] Create APIM operation definition infrastructure/modules/apim/operations/get-home.json for GET / (redirect to page 100)
-- [ ] T031 [US1] Update APIM Bicep module to deploy policy fragments and operations
+- [X] T018 [P] [US1] Create sample content file content/pages/page-100.txt with breaking news
+- [X] T019 [P] [US1] Create sample content file content/pages/page-101.txt with technology news
+- [X] T020 [P] [US1] Create sample content file content/pages/page-102.txt with weather news
+- [X] T021 [US1] Implement PowerShell conversion script to generate policy fragments from text files (include 2000 character limit validation per FR-013)
+- [X] T021b [US1] Validate generated policy fragments: XML schema check, 2000 char limit enforcement, HTML syntax validation
+- [X] T022 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-100.xml (initial manual run for MVP; T050 automates in CI/CD)
+- [X] T023 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-101.xml (initial manual run for MVP; T050 automates in CI/CD)
+- [X] T024 [US1] Run conversion script to create infrastructure/modules/apim/fragments/page-102.xml (initial manual run for MVP; T050 automates in CI/CD)
+- [X] T025 [US1] Create error page fragment infrastructure/modules/apim/fragments/error-page.xml
+- [X] T026 [US1] Create navigation template fragment infrastructure/modules/apim/fragments/navigation-template.xml with HTMX attributes
+- [X] T027 [US1] Add inline teletext CSS to fragments (monospace font, black background, green text, blue header)
+- [X] T028 [US1] Create page routing policy infrastructure/modules/apim/policies/page-routing-policy.xml with choose/when conditions
+- [X] T029 [US1] Create APIM operation definition infrastructure/modules/apim/operations/get-page.json for GET /page/{pageNumber}
+- [X] T030 [US1] Create APIM operation definition infrastructure/modules/apim/operations/get-home.json for GET / (redirect to page 100)
+- [X] T031 [US1] Update APIM Bicep module to deploy policy fragments and operations
 - [ ] T032 [US1] Deploy updated APIM configuration to Azure
 - [ ] T033 [US1] Verify page 100 displays correctly in browser via Application Gateway public IP
 
@@ -98,16 +98,16 @@ Using **APIM Policy-Centric** structure:
 
 ### Implementation for User Story 2
 
-- [ ] T034 [P] [US2] Add HTMX script reference to all policy fragments (CDN: https://unpkg.com/htmx.org@1.9.10)
-- [ ] T035 [US2] Implement previous page button with hx-get="/page/{currentPage-1}" in navigation template
-- [ ] T036 [US2] Implement next page button with hx-get="/page/{currentPage+1}" in navigation template
-- [ ] T037 [US2] Implement page number input field with validation (min="100" max="999")
-- [ ] T038 [US2] Implement "Go to Page" button with hx-get and hx-include for dynamic page navigation
-- [ ] T039 [US2] Add hx-target="#content" to all navigation controls for partial page updates
-- [ ] T040 [US2] Add hx-push-url="true" to navigation controls for browser history support
-- [ ] T041 [US2] Update page routing policy to handle page number extraction from route parameters
-- [ ] T042 [US2] Add page number validation in APIM policy (400 Bad Request for invalid input)
-- [ ] T043 [US2] Add boundary handling for first page (disable previous on page 100)
+- [X] T034 [P] [US2] Add HTMX script reference to all policy fragments (CDN: https://unpkg.com/htmx.org@1.9.10)
+- [X] T035 [US2] Implement previous page button with hx-get="/page/{currentPage-1}" in navigation template
+- [X] T036 [US2] Implement next page button with hx-get="/page/{currentPage+1}" in navigation template
+- [X] T037 [US2] Implement page number input field with validation (min="100" max="999")
+- [X] T038 [US2] Implement "Go to Page" button with hx-get and hx-include for dynamic page navigation
+- [X] T039 [US2] Add hx-target="#content" to all navigation controls for partial page updates
+- [X] T040 [US2] Add hx-push-url="true" to navigation controls for browser history support
+- [X] T041 [US2] Update page routing policy to handle page number extraction from route parameters
+- [X] T042 [US2] Add page number validation in APIM policy (400 Bad Request for invalid input)
+- [X] T043 [US2] Add boundary handling for first page (disable previous on page 100)
 - [ ] T044 [US2] Deploy updated APIM policies and fragments
 - [ ] T045 [US2] Test navigation: page 100 → next → page 101, previous → page 100, direct input page 102
 
@@ -123,13 +123,13 @@ Using **APIM Policy-Centric** structure:
 
 ### Implementation for User Story 3
 
-- [ ] T046 [P] [US3] Document conversion script usage in README or quickstart guide
-- [ ] T047 [P] [US3] Create additional sample pages: page-103.txt through page-110.txt (8 pages)
-- [ ] T048 [US3] Add validation to conversion script: check UTF-8 encoding, max 2000 characters
-- [ ] T049 [US3] Add special character escaping in conversion script (handle XML-unsafe characters)
-- [ ] T050 [US3] Automate conversion script in GitHub Actions workflow (on content/ file changes)
-- [ ] T051 [US3] Update APIM policy routing to handle pages 103-110 in choose/when conditions
-- [ ] T052 [US3] Generate policy fragments for pages 103-110 using conversion script
+- [X] T046 [P] [US3] Document conversion script usage in README or quickstart guide
+- [X] T047 [P] [US3] Create additional sample pages: page-103.txt through page-110.txt (8 pages)
+- [X] T048 [US3] Add validation to conversion script: check UTF-8 encoding, max 2000 characters
+- [X] T049 [US3] Add special character escaping in conversion script (handle XML-unsafe characters)
+- [X] T050 [US3] Automate conversion script in GitHub Actions workflow (on content/ file changes)
+- [X] T051 [US3] Update APIM policy routing to handle pages 103-110 in choose/when conditions
+- [X] T052 [US3] Generate policy fragments for pages 103-110 using conversion script
 - [ ] T053 [US3] Deploy updated fragments to APIM
 - [ ] T054 [US3] Test content update workflow: modify page-105.txt, run script, redeploy, verify changes
 - [ ] T055 [US3] Test missing page scenario: navigate to page 500, verify error page displays with "return to page 100" link
@@ -146,16 +146,16 @@ Using **APIM Policy-Centric** structure:
 
 ### Implementation for User Story 4
 
-- [ ] T056 [P] [US4] Implement F# HTTP trigger function in src/backend/TxtTv.Functions/MazeMessage.fs
-- [ ] T057 [P] [US4] Configure function to return 200 OK with "you found through the maze" message
-- [ ] T058 [P] [US4] Add function project file TxtTv.Functions.fsproj with .NET 10 SDK
-- [ ] T059 [P] [US4] Create host.json with Azure Functions runtime v4 configuration
+- [X] T056 [P] [US4] Implement F# HTTP trigger function in src/backend/TxtTv.Functions/MazeMessage.fs
+- [X] T057 [P] [US4] Configure function to return 200 OK with "you found through the maze" message
+- [X] T058 [P] [US4] Add function project file TxtTv.Functions.fsproj with .NET 10 SDK
+- [X] T059 [P] [US4] Create host.json with Azure Functions runtime v4 configuration
 - [ ] T060 [US4] Deploy F# Function App to Azure
-- [ ] T061 [US4] Create backend policy infrastructure/modules/apim/policies/backend-policy.xml to forward requests
-- [ ] T062 [US4] Create APIM operation definition infrastructure/modules/apim/operations/get-backend-test.json for GET /backend-test
-- [ ] T063 [US4] Configure APIM backend to point to Azure Functions URL
-- [ ] T064 [US4] Add correlation ID and X-Backend-Called header in APIM backend policy
-- [ ] T065 [US4] Add error handling in APIM policy for backend unavailability (503 response)
+- [X] T061 [US4] Create backend policy infrastructure/modules/apim/policies/backend-policy.xml to forward requests
+- [X] T062 [US4] Create APIM operation definition infrastructure/modules/apim/operations/get-backend-test.json for GET /backend-test
+- [X] T063 [US4] Configure APIM backend to point to Azure Functions URL
+- [X] T064 [US4] Add correlation ID and X-Backend-Called header in APIM backend policy
+- [X] T065 [US4] Add error handling in APIM policy for backend unavailability (503 response)
 - [ ] T066 [US4] Deploy APIM backend policy and operation
 - [ ] T067 [US4] Test backend connectivity: navigate to /backend-test via Application Gateway
 - [ ] T068 [US4] Verify "you found through the maze" message displays
@@ -169,22 +169,22 @@ Using **APIM Policy-Centric** structure:
 
 **Purpose**: Performance optimization, monitoring, and production readiness
 
-- [ ] T070 [P] Add Application Insights instrumentation to APIM policies (custom dimensions)
+- [X] T070 [P] Add Application Insights instrumentation to APIM policies (custom dimensions)
 - [ ] T071 [P] Create Azure Monitor workbook for WAF metrics (blocks, allowed requests, rule matches)
 - [ ] T072 [P] Create Azure Monitor workbook for APIM metrics (page views, response times, errors)
-- [ ] T073 [P] Add cache headers to APIM policy responses (Cache-Control: public, max-age=300)
-- [ ] T074 [P] Create Pester test infrastructure/tests/infrastructure/bicep-validation.tests.ps1
-- [ ] T075 [P] Create Pester test infrastructure/tests/policies/policy-validation.tests.ps1 (XML validation)
-- [ ] T076 [P] Create Pester test infrastructure/tests/security/waf-sql-injection.tests.ps1
-- [ ] T077 [P] Create Pester test infrastructure/tests/security/waf-xss.tests.ps1
-- [ ] T078 [P] Create Pester test infrastructure/tests/integration/page-navigation.tests.ps1
-- [ ] T079 Add GitHub Actions workflow validation gates (Bicep lint, policy validation, security scan)
-- [ ] T080 [P] Create staging environment infrastructure/environments/staging/main.bicep
-- [ ] T081 [P] Create prod environment infrastructure/environments/prod/main.bicep
-- [ ] T082 Document rollback procedure in quickstart.md
+- [X] T073 [P] Add cache headers to APIM policy responses (Cache-Control: public, max-age=300)
+- [X] T074 [P] Create Pester test infrastructure/tests/infrastructure/bicep-validation.tests.ps1
+- [X] T075 [P] Create Pester test infrastructure/tests/policies/policy-validation.tests.ps1 (XML validation)
+- [X] T076 [P] Create Pester test infrastructure/tests/security/waf-sql-injection.tests.ps1
+- [X] T077 [P] Create Pester test infrastructure/tests/security/waf-xss.tests.ps1
+- [X] T078 [P] Create Pester test infrastructure/tests/integration/page-navigation.tests.ps1
+- [X] T079 Add GitHub Actions workflow validation gates (Bicep lint, policy validation, security scan)
+- [X] T080 [P] Create staging environment infrastructure/environments/staging/main.bicep
+- [X] T081 [P] Create prod environment infrastructure/environments/prod/main.bicep
+- [X] T082 Document rollback procedure in quickstart.md
 - [ ] T083 Add performance testing results to plan.md (verify <1s navigation, <2s page load)
 - [ ] T084 Create demo video or screenshot of working application
-- [ ] T085 [P] Add page number bounds validation task: Validate APIM policy rejects page numbers <100 or >999 per FR-013; add Pester test for edge cases (99, 1000)
+- [X] T085 [P] Add page number bounds validation task: Validate APIM policy rejects page numbers <100 or >999 per FR-013; add Pester test for edge cases (99, 1000)
 
 ---
 

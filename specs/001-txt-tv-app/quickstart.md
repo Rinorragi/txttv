@@ -366,6 +366,71 @@ az network application-gateway delete `
     --name appgw-txttv-dev
 ```
 
+## Rollback Procedure
+
+### Bicep Deployment Rollback
+
+Azure maintains deployment history, allowing rollback to previous versions:
+
+```powershell
+# List deployment history
+az deployment group list --resource-group $env:RESOURCE_GROUP --query "[].{Name:name, State:properties.provisioningState, Timestamp:properties.timestamp}" -o table
+
+# Get previous deployment name
+$previousDeployment = (az deployment group list --resource-group $env:RESOURCE_GROUP --query "[1].name" -o tsv)
+
+# View previous deployment details
+az deployment group show --resource-group $env:RESOURCE_GROUP --name $previousDeployment
+
+# Export previous deployment template
+az deployment group export --resource-group $env:RESOURCE_GROUP --name $previousDeployment > rollback-template.json
+
+# Redeploy previous version
+az deployment group create --resource-group $env:RESOURCE_GROUP --template-file rollback-template.json
+```
+
+### Git-based Rollback
+
+For code/content changes, use Git to revert:
+
+```powershell
+# View recent commits
+git log --oneline -10
+
+# Revert to previous commit
+git revert HEAD --no-commit
+git commit -m "Rollback: Revert last change due to issue"
+
+# Or reset to specific commit (CAUTION: destructive)
+git reset --hard <commit-hash>
+
+# Redeploy after git rollback
+az deployment group create `
+    --resource-group $env:RESOURCE_GROUP `
+    --template-file infrastructure/environments/dev/main.bicep `
+    --parameters infrastructure/environments/dev/parameters.json
+```
+
+### APIM Policy Rollback
+
+Rollback specific APIM policies using revision history:
+
+```powershell
+# List API revisions
+az apim api revision list --resource-group $env:RESOURCE_GROUP --service-name $env:APIM_NAME --api-id txttv-api
+
+# Create new revision from previous version (in Azure Portal)
+# Or redeploy from Git history as described above
+```
+
+### Emergency Rollback Checklist
+
+1. **Identify the issue**: Check Application Insights for errors
+2. **Determine rollback scope**: Bicep, policies, or code?
+3. **Execute rollback**: Use appropriate method above
+4. **Verify recovery**: Test endpoints and check monitoring
+5. **Document incident**: Update tasks.md with lessons learned
+
 ## Next Steps
 
 After completing the quickstart:
