@@ -21,7 +21,7 @@ output customRule object = {
         }
       ]
       operator: 'IPMatch'
-      negationConditon: true
+      negationCondition: true
       matchValues: [
         '127.0.0.1'
       ]

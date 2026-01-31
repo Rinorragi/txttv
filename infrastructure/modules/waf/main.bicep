@@ -42,7 +42,7 @@ resource wafPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPo
               }
             ]
             operator: 'IPMatch'
-            negationConditon: true
+            negationCondition: true
             matchValues: [
               '127.0.0.1'
             ]
@@ -64,7 +64,7 @@ resource wafPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPo
               }
             ]
             operator: 'Contains'
-            negationConditon: false
+            negationCondition: false
             matchValues: [
               'select'
               'insert'
@@ -101,7 +101,7 @@ resource wafPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPo
               }
             ]
             operator: 'Contains'
-            negationConditon: false
+            negationCondition: false
             matchValues: [
               '<script'
               'javascript:'
@@ -133,7 +133,7 @@ resource wafPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPo
               }
             ]
             operator: 'Contains'
-            negationConditon: false
+            negationCondition: false
             matchValues: [
               '../'
               '..%2f'

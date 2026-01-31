@@ -16,7 +16,7 @@ output customRule object = {
         }
       ]
       operator: 'Contains'
-      negationConditon: false
+      negationCondition: false
       matchValues: [
         '<script'
         'javascript:'
