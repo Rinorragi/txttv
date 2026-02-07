@@ -101,7 +101,8 @@ module RequestLoader =
                         Description =
                             let mutable descElement = Unchecked.defaultof<JsonElement>
                             if root.TryGetProperty("description", &descElement) then
-                                Some (descElement.GetString())
+                                let descValue = descElement.GetString()
+                                if String.IsNullOrWhiteSpace(descValue) then None else Some descValue
                             else
                                 None
                         Method = method
@@ -117,7 +118,8 @@ module RequestLoader =
                         WafRule =
                             let mutable ruleElement = Unchecked.defaultof<JsonElement>
                             if root.TryGetProperty("wafRule", &ruleElement) then
-                                Some (ruleElement.GetString())
+                                let ruleValue = ruleElement.GetString()
+                                if String.IsNullOrWhiteSpace(ruleValue) then None else Some ruleValue
                             else
                                 None
                     }
