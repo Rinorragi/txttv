@@ -1,0 +1,10 @@
+{
+  "name": "SQL Injection Attack",
+  "description": "Test WAF protection against SQL injection in query parameters",
+  "method": "GET",
+  "url": "https://your-apim-endpoint.azure-api.net/pages/100?search=' OR '1'='1",
+  "headers": {},
+  "body": null,
+  "expectedBlocked": true,
+  "wafRule": "SQL Injection Protection"
+}

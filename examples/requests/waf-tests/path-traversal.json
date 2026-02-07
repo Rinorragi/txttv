@@ -1,0 +1,10 @@
+{
+  "name": "Path Traversal Attack",
+  "description": "Test WAF protection against directory traversal attempts",
+  "method": "GET",
+  "url": "https://your-apim-endpoint.azure-api.net/pages/../../../etc/passwd",
+  "headers": {},
+  "body": null,
+  "expectedBlocked": true,
+  "wafRule": "Path Traversal Protection"
+}

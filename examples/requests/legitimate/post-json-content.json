@@ -1,0 +1,17 @@
+{
+  "name": "Post JSON Content",
+  "description": "Send JSON content to the backend test endpoint",
+  "method": "POST",
+  "url": "https://your-apim-endpoint.azure-api.net/backend-test",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "message": "Hello from TxtTV Test Utility",
+    "timestamp": "2025-01-01T12:00:00Z",
+    "data": {
+      "key": "value",
+      "nested": true
+    }
+  }
+}

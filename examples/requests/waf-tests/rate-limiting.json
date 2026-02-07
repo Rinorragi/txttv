@@ -1,0 +1,11 @@
+{
+  "name": "Rate Limiting Test",
+  "description": "Test WAF rate limiting protection by sending rapid requests",
+  "method": "GET",
+  "url": "https://your-apim-endpoint.azure-api.net/pages/100",
+  "headers": {},
+  "body": null,
+  "expectedBlocked": true,
+  "wafRule": "Rate Limiting",
+  "note": "Execute this request multiple times in quick succession to trigger rate limiting"
+}
