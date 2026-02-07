@@ -1,10 +1,16 @@
 <!--
-Sync Impact Report - Constitution v1.2.0
+Sync Impact Report - Constitution v1.2.1
 ========================================
-Version: 1.1.0 → 1.2.0 (MINOR - Testing scope clarification)
-Rationale: Clarify testing requirements - infrastructure deployment testing is redundant
-with Azure's built-in Bicep validation. Focus testing efforts on application logic (APIM
-policies, backend functions, WAF behavior) rather than infrastructure deployment validation.
+Version: 1.2.0 → 1.2.1 (PATCH - Path reference convention)
+Rationale: Standardize file path references in documentation and code to use repository-relative
+paths instead of absolute paths with machine-specific drive letters. Improves portability,
+readability, and cross-platform compatibility.
+
+Change Log (v1.2.1):
+- Added Documentation Requirements section requiring repository-relative paths
+- File references must use paths relative to repository root (e.g., infrastructure/README.md)
+- Absolute paths with drive letters (e.g., d:\ohjelmointi\txttv\...) are prohibited in code/docs
+- Applies to all markdown documentation, code comments, and file references
 
 Change Log (v1.2.0):
 - Updated Principle IV to clarify infrastructure testing scope
@@ -16,7 +22,8 @@ Change Log (v1.2.0):
 Modified Principles:
 - Principle IV: Removed infrastructure deployment testing requirement, added "Testing Scope" clarification
 
-Added Sections: None
+Added Sections: 
+- Documentation Requirements: File path reference standards
 
 Removed Sections: None
 
@@ -175,6 +182,9 @@ Rollback procedures MUST be automated and tested.
 - WAF rules MUST document the attack vector they protect against
 - APIM policies MUST document their purpose and configuration parameters
 - Deployment procedures MUST be documented in specs/ directory
+- File paths in documentation MUST be relative to repository root (e.g., `infrastructure/README.md`)
+- Absolute paths with drive letters (e.g., `d:\ohjelmointi\txttv\...`) are PROHIBITED in documentation and code
+- Use forward slashes for cross-platform compatibility in documentation
 
 ## Governance
 
@@ -198,4 +208,4 @@ This constitution supersedes all other development practices and guidelines.
 
 Use `.specify/memory/constitution.md` as the authoritative source for runtime development guidance.
 
-**Version**: 1.1.0 | **Ratified**: 2026-01-31 | **Last Amended**: 2026-01-31
+**Version**: 1.2.1 | **Ratified**: 2026-01-31 | **Last Amended**: 2026-02-07
