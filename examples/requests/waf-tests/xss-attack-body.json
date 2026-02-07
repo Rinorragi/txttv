@@ -1,0 +1,15 @@
+{
+  "name": "XSS Attack in Body",
+  "description": "Test WAF protection against cross-site scripting in POST body",
+  "method": "POST",
+  "url": "https://your-apim-endpoint.azure-api.net/backend-test",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "message": "<script>alert('XSS')</script>",
+    "maliciousPayload": "<img src=x onerror=alert('XSS')>"
+  },
+  "expectedBlocked": true,
+  "wafRule": "XSS Protection"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Command Injection in Headers",
+  "description": "Test WAF protection against command injection in custom headers",
+  "method": "GET",
+  "url": "https://your-apim-endpoint.azure-api.net/pages/100",
+  "headers": {
+    "X-Custom-Header": "; cat /etc/passwd"
+  },
+  "body": null,
+  "expectedBlocked": true,
+  "wafRule": "Command Injection Protection"
+}

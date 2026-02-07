@@ -1,0 +1,10 @@
+{
+  "name": "Post XML Content",
+  "description": "Send XML content to the backend test endpoint",
+  "method": "POST",
+  "url": "https://your-apim-endpoint.azure-api.net/backend-test",
+  "headers": {
+    "Content-Type": "application/xml"
+  },
+  "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<message>\n  <text>Hello from TxtTV</text>\n  <timestamp>2025-01-01T12:00:00Z</timestamp>\n  <data>\n    <key>value</key>\n    <nested>true</nested>\n  </data>\n</message>"
+}

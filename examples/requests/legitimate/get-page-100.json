@@ -1,0 +1,8 @@
+{
+  "name": "Get Home Page",
+  "description": "Fetch the TxtTV home page (page 100)",
+  "method": "GET",
+  "url": "https://your-apim-endpoint.azure-api.net/pages/100",
+  "headers": {},
+  "body": null
+}
