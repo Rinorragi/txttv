@@ -132,7 +132,7 @@ module HttpClient =
     /// <summary>
     /// Sends an HTTP request with a body (POST, PUT, PATCH, etc.).
     /// </summary>
-    let sendPostRequest (method: HttpMethod) (url: string) (headers: Map<string, string>) (body: string) (contentType: string) (timeoutSeconds: int) : Task<HttpResponse> =
+    let sendRequestWithBody (method: HttpMethod) (url: string) (headers: Map<string, string>) (body: string) (contentType: string) (timeoutSeconds: int) : Task<HttpResponse> =
         async {
             let stopwatch = System.Diagnostics.Stopwatch.StartNew()
             
@@ -227,7 +227,7 @@ module HttpClient =
         | "POST" ->
             let body = request.Body |> Option.defaultValue ""
             let contentType = request.ContentType |> Option.defaultValue "application/json"
-            sendPostRequest request.Method request.Url request.Headers body contentType request.TimeoutSeconds
+            sendRequestWithBody request.Method request.Url request.Headers body contentType request.TimeoutSeconds
         | "PUT" | "DELETE" | "PATCH" ->
             // For other methods, use a generic implementation similar to POST
             async {
