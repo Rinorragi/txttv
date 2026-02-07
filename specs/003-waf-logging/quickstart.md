@@ -42,10 +42,13 @@ cd D:\ohjelmointi\txttv
 $environment = "dev"  # or "staging", "prod"
 
 # Deploy infrastructure
-.\infrastructure\scripts\Deploy-Infrastructure.ps1 `
-    -Environment $environment `
-    -SubscriptionId "<your-subscription-id>" `
-    -Location "westeurope"
+az stack group create `
+  --name txttv-$environment-stack `
+  --resource-group txttv-$environment-rg `
+  --template-file infrastructure/environments/$environment/main.bicep `
+  --parameters infrastructure/environments/$environment/parameters.json `
+  --deny-settings-mode none `
+  --action-on-unmanage deleteResources
 ```
 
 **What happens**:

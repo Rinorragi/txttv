@@ -39,7 +39,7 @@ description: "Task list for WAF Logging to Log Analytics feature implementation"
 - [x] T004 [P] Update infrastructure/environments/staging/main.bicep to pass logAnalytics.id to app-gateway module
 - [x] T005 [P] Update infrastructure/environments/prod/main.bicep to pass logAnalytics.id to app-gateway module
 - [x] T006 Run Bicep validation: `az bicep build --file infrastructure/modules/app-gateway/main.bicep`
-- [ ] T007 Deploy to dev environment using infrastructure/scripts/Deploy-Infrastructure.ps1 -Environment dev
+- [ ] T007 Deploy to dev environment using az stack group create with dev parameters
 
 **Checkpoint**: Foundation ready - diagnostic settings configured, user story validation can begin
 
@@ -116,8 +116,8 @@ description: "Task list for WAF Logging to Log Analytics feature implementation"
 - [x] T030 [P] Update infrastructure/README.md with diagnostic settings deployment information
 - [x] T031 [P] Add KQL query examples from quickstart.md to infrastructure/README.md
 - [x] T032 [P] Document troubleshooting steps for "no logs appearing" scenario
-- [ ] T033 Deploy to staging environment using infrastructure/scripts/Deploy-Infrastructure.ps1 -Environment staging
-- [ ] T034 Deploy to prod environment using infrastructure/scripts/Deploy-Infrastructure.ps1 -Environment prod
+- [ ] T033 Deploy to staging environment using az stack group create with staging parameters
+- [ ] T034 Deploy to prod environment using az stack group create with prod parameters
 - [ ] T035 Run quickstart.md validation against dev environment
 - [ ] T036 Verify all 3 environments (dev/staging/prod) have diagnostic settings configured
 - [ ] T037 Create example dashboard query for "Blocked requests by IP" visualization (optional enhancement)
