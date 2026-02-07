@@ -122,8 +122,7 @@ module appGateway '../modules/app-gateway/main.bicep' = {
     capacity: 2 // Higher capacity for staging
     apimGatewayUrl: apim.outputs.apimGatewayUrl
     wafPolicyId: waf.outputs.wafPolicyId
-    vnetName: vnetName
-  }
+    vnetName: vnetName    logAnalyticsWorkspaceId: logAnalytics.id  }
 }
 
 // Outputs

@@ -1,26 +1,29 @@
 <!--
-Sync Impact Report - Constitution v1.1.0
+Sync Impact Report - Constitution v1.2.1
 ========================================
-Version: 1.0.1 → 1.1.0 (MINOR - Architecture clarification and APIM policy guidance expansion)
-Rationale: Clarify project architecture - APIM policy fragments are the primary implementation
-surface for TXT TV rendering, not traditional backend code. This materially expands guidance
-on APIM policy development and testing requirements.
+Version: 1.2.0 → 1.2.1 (PATCH - Path reference convention)
+Rationale: Standardize file path references in documentation and code to use repository-relative
+paths instead of absolute paths with machine-specific drive letters. Improves portability,
+readability, and cross-platform compatibility.
 
-Change Log (v1.1.0):
-- Added "Project Architecture" section explaining AppGW → APIM → F# backend flow
-- Expanded Technology Stack to emphasize APIM policy fragments as primary implementation
-- Updated Principle II to include APIM policy testing requirements
-- Updated Principle III to emphasize APIM policy execution tracing
-- Updated Principle IV to include APIM policy modularity and fragment testing
-- Clarified F# backend role as minimal/demo, not primary business logic container
+Change Log (v1.2.1):
+- Added Documentation Requirements section requiring repository-relative paths
+- File references must use paths relative to repository root (e.g., infrastructure/README.md)
+- Absolute paths with drive letters (e.g., d:\ohjelmointi\txttv\...) are prohibited in code/docs
+- Applies to all markdown documentation, code comments, and file references
+
+Change Log (v1.2.0):
+- Updated Principle IV to clarify infrastructure testing scope
+- Removed requirement for infrastructure deployment tests (Pester tests for Bicep deployments)
+- Emphasized that Azure's Bicep validation handles infrastructure validation
+- Explicitly prohibited creating deployment tests - Bicep validation is sufficient
+- Maintained requirements for application-level testing (APIM policies, WAF rules, backend functions)
 
 Modified Principles:
-- Principle II: Added APIM policy security requirements
-- Principle III: Added APIM policy execution tracing requirements
-- Principle IV: Added APIM policy fragment testing requirements
+- Principle IV: Removed infrastructure deployment testing requirement, added "Testing Scope" clarification
 
-Added Sections:
-- Project Architecture (new section explaining the unique APIM-centric design)
+Added Sections: 
+- Documentation Requirements: File path reference standards
 
 Removed Sections: None
 
@@ -28,6 +31,7 @@ Templates Status:
 ✅ All templates remain compatible - no updates required
 
 Previous Versions:
+- v1.1.0 (2026-02-07): APIM policy guidance expansion
 - v1.0.1 (2026-01-31): Specified Bicep and .NET F# Azure Functions
 - v1.0.0 (2026-01-31): Initial ratification with 5 core principles
 
@@ -83,19 +87,21 @@ Dashboards MUST visualize WAF blocks, allowed traffic, and performance metrics.
 
 ### IV. Modularity & Testability
 
-Infrastructure components MUST be independently deployable and testable.
-Each module (APIM, AppGW, WAF, backend) MUST have isolated test scenarios.
+Infrastructure components MUST be independently deployable.
+Each module (APIM, AppGW, WAF, backend) MUST have clear boundaries.
 Changes to one component MUST NOT require full redeployment of unrelated components.
 
 **Requirements**:
-- Infrastructure modules with clear boundaries
+- Infrastructure modules with clear boundaries and isolated deployment
 - APIM policy fragments MUST be independently testable (unit tests for transformation logic)
 - Contract tests for APIM policy inputs/outputs
 - Integration tests for WAF rules
 - Smoke tests for deployed endpoints
 - F# backend functions testable in isolation (when called)
 
-**Rationale**: Enables rapid iteration on WAF configurations and APIM policy fragments without breaking unrelated components. Policy fragment modularity allows incremental development of TXT TV rendering features.
+**Testing Scope**: Testing focuses on application-level functionality (APIM policies, backend functions, WAF behavior). Infrastructure deployment validation and testing is NOT required - Azure's Bicep validation (`az bicep build`) and ARM deployment validation are sufficient. Do not create Pester tests or other automated tests for infrastructure deployment or Bicep templates.
+
+**Rationale**: Enables rapid iteration on WAF configurations and APIM policy fragments without breaking unrelated components. Policy fragment modularity allows incremental development of TXT TV rendering features. Infrastructure and deployment testing is redundant given Azure's built-in validation.
 
 ### V. Deployment Automation
 
@@ -176,6 +182,9 @@ Rollback procedures MUST be automated and tested.
 - WAF rules MUST document the attack vector they protect against
 - APIM policies MUST document their purpose and configuration parameters
 - Deployment procedures MUST be documented in specs/ directory
+- File paths in documentation MUST be relative to repository root (e.g., `infrastructure/README.md`)
+- Absolute paths with drive letters (e.g., `d:\ohjelmointi\txttv\...`) are PROHIBITED in documentation and code
+- Use forward slashes for cross-platform compatibility in documentation
 
 ## Governance
 
@@ -199,4 +208,4 @@ This constitution supersedes all other development practices and guidelines.
 
 Use `.specify/memory/constitution.md` as the authoritative source for runtime development guidance.
 
-**Version**: 1.1.0 | **Ratified**: 2026-01-31 | **Last Amended**: 2026-01-31
+**Version**: 1.2.1 | **Ratified**: 2026-01-31 | **Last Amended**: 2026-02-07

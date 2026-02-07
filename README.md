@@ -85,9 +85,10 @@ flowchart TB
 # Convert content to policy fragments
 .\infrastructure\scripts\convert-txt-to-fragment.ps1
 
-# Deploy infrastructure (requires Azure CLI)
-az deployment group create \
-  --resource-group txttv-rg \
+# Deploy infrastructure using deployment stack
+az stack group create \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
   --template-file infrastructure/environments/dev/main.bicep \
   --parameters @infrastructure/environments/dev/parameters.json
 ```

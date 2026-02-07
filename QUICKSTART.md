@@ -35,8 +35,17 @@ Deploy the TxtTV infrastructure to Azure:
 # Navigate to repository root (if not already there)
 # cd <path-to-your-txttv-repo>
 
-# Deploy to dev environment
-.\infrastructure\scripts\Deploy-Infrastructure.ps1 -Environment dev
+# Create resource group
+az group create --name txttv-dev-rg --location westeurope
+
+# Deploy using deployment stack
+az stack group create `
+  --name txttv-dev-stack `
+  --resource-group txttv-dev-rg `
+  --template-file infrastructure/environments/dev/main.bicep `
+  --parameters infrastructure/environments/dev/parameters.json `
+  --deny-settings-mode none `
+  --action-on-unmanage deleteResources
 ```
 
 **What this does:**
@@ -186,11 +195,11 @@ When done testing, remove all Azure resources:
 # Navigate back to repository root (if not already there)
 # cd <path-to-your-txttv-repo>
 
-# Remove all resources (prompts for confirmation)
-.\infrastructure\scripts\Remove-Infrastructure.ps1 -Environment dev
+# Remove all resources
+az stack group delete --name txttv-dev-stack --resource-group txttv-dev-rg --action-on-unmanage deleteAll --yes
 
-# Or force delete without confirmation
-.\infrastructure\scripts\Remove-Infrastructure.ps1 -Environment dev -Force
+# Or delete entire resource group
+az group delete --name txttv-dev-rg --yes
 ```
 
 ---
@@ -199,7 +208,7 @@ When done testing, remove all Azure resources:
 
 ### Deploy Infrastructure
 ```powershell
-.\infrastructure\scripts\Deploy-Infrastructure.ps1 -Environment <dev|staging|prod>
+az stack group create --name txttv-<env>-stack --resource-group txttv-<env>-rg --template-file infrastructure/environments/<env>/main.bicep --parameters infrastructure/environments/<env>/parameters.json
 ```
 
 ### Send HTTP Request
@@ -219,7 +228,7 @@ dotnet run --project tools\TxtTv.TestUtility -- list [-d <directory>] [-r]
 
 ### Remove Infrastructure
 ```powershell
-.\infrastructure\scripts\Remove-Infrastructure.ps1 -Environment <env> [-Force]
+az stack group delete --name txttv-<env>-stack --resource-group txttv-<env>-rg --action-on-unmanage deleteAll --yes
 ```
 
 ---
@@ -234,14 +243,14 @@ az account show
 
 ### "Bicep validation failed"
 Check template syntax:
-```powershell
-bicep build infrastructure\environments\dev\main.bicep
+```bash
+az bicep build --file infrastructure/environments/dev/main.bicep
 ```
 
 ### "Deployment timeout"
 Increase timeout:
 ```powershell
-.\infrastructure\scripts\Deploy-Infrastructure.ps1 -Environment dev -TimeoutMinutes 60
+az stack group create --name txttv-dev-stack --resource-group txttv-dev-rg --template-file infrastructure/environments/dev/main.bicep --parameters infrastructure/environments/dev/parameters.json
 ```
 
 ### ".NET build errors"

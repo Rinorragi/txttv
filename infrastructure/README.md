@@ -1,299 +1,418 @@
-# TxtTV Deployment & Testing Utility
+# TxtTV Infrastructure Deployment
 
-Simple deployment scripts and HTTP testing utility for the TxtTV Azure infrastructure.
+Deploy TxtTV infrastructure using Azure Deployment Stacks for managed resource lifecycle.
 
-## Features
+## Prerequisites
 
-### 🚀 Simple Deployment Scripts
-- **One-command deployment**: Deploy entire Azure infrastructure with a single PowerShell script
-- **Environment support**: Separate configurations for dev, staging, and prod
-- **Automatic validation**: Bicep template validation before deployment
-- **Progress monitoring**: Real-time deployment status and resource tracking
-- **Easy cleanup**: Simple script to remove all resources
-
-### 🧪 HTTP Testing Utility
-- **Send HTTP requests**: GET, POST, PUT, PATCH with JSON/XML support
-- **HMAC signatures**: Automatic request signing with HMAC-SHA256
-- **Load from files**: Execute batches of requests from JSON definitions
-- **WAF testing**: Pre-built examples to test Web Application Firewall rules
-- **Pretty output**: Color-coded responses with formatted JSON/XML
+- **Azure CLI 2.50+** (with deployment stacks support)
+- **Bicep CLI** (included with Azure CLI 2.20+)
+- **Azure Subscription** with permissions to create resources
 
 ## Quick Start
 
-### Prerequisites
-- **PowerShell 7+** (for deployment scripts)
-- **.NET 10 SDK** (for test utility)
-- **Azure CLI** (authenticated with `az login`)
-- **Bicep CLI** (or use `az bicep`)
+### 1. Login to Azure
 
-### 1. Deploy Infrastructure
-
-```powershell
-# Deploy to dev environment
-.\infrastructure\scripts\Deploy-Infrastructure.ps1 -Environment dev
-
-# Deploy to production with confirmation
-.\infrastructure\scripts\Deploy-Infrastructure.ps1 -Environment prod
-
-# Dry-run (what-if mode)
-.\infrastructure\scripts\Deploy-Infrastructure.ps1 -Environment dev -WhatIf
+```bash
+az login
+az account set --subscription "your-subscription-id"
 ```
 
-### 2. Send Test Requests
+### 2. Create Resource Group
 
-```powershell
-cd tools\TxtTv.TestUtility
+```bash
+# For dev environment
+az group create --name txttv-dev-rg --location westeurope
 
-# Simple GET request
-dotnet run -- send -u "https://your-apim.azure-api.net/pages/100" -m GET -v
+# For staging environment
+az group create --name txttv-staging-rg --location westeurope
 
-# POST with JSON body and signature
-dotnet run -- send `
-  -u "https://your-apim.azure-api.net/backend-test" `
-  -m POST `
-  -b '{"message":"Hello TxtTV"}' `
-  -k "your-secret-key" `
-  -v
-
-# Load and execute request from file
-dotnet run -- load -f "..\..\examples\requests\legitimate\get-page-100.json" -k "your-key"
-
-# Execute all WAF tests
-dotnet run -- load -f "..\..\examples\requests\waf-tests" -k "your-key" -c
+# For production environment
+az group create --name txttv-prod-rg --location westeurope
 ```
 
-### 3. Clean Up Resources
+### 3. Deploy Infrastructure Stack
 
-```powershell
-# Remove all resources (prompts for confirmation)
-.\infrastructure\scripts\Remove-Infrastructure.ps1 -Environment dev
+Deployment stacks provide managed lifecycle, prevent accidental deletion, and enable deny assignments.
 
-# Force delete without confirmation
-.\infrastructure\scripts\Remove-Infrastructure.ps1 -Environment dev -Force
+```bash
+# Deploy to dev
+az stack group create \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --template-file infrastructure/environments/dev/main.bicep \
+  --parameters infrastructure/environments/dev/parameters.json \
+  --deny-settings-mode none \
+  --action-on-unmanage deleteResources
 
-# Delete resources but preserve storage accounts
-.\infrastructure\scripts\Remove-Infrastructure.ps1 -Environment dev -PreserveData
+# Deploy to staging
+az stack group create \
+  --name txttv-staging-stack \
+  --resource-group txttv-staging-rg \
+  --template-file infrastructure/environments/staging/main.bicep \
+  --parameters infrastructure/environments/staging/parameters.json \
+  --deny-settings-mode none \
+  --action-on-unmanage deleteResources
+
+# Deploy to production (with deny assignments for safety)
+az stack group create \
+  --name txttv-prod-stack \
+  --resource-group txttv-prod-rg \
+  --template-file infrastructure/environments/prod/main.bicep \
+  --parameters infrastructure/environments/prod/parameters.json \
+  --deny-settings-mode denyDelete \
+  --action-on-unmanage detachAll
+```
+
+### 4. Get Deployment Outputs
+
+```bash
+# Get stack outputs
+az stack group show \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --query 'outputs'
+
+# Get specific output values
+az stack group show \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --query 'outputs.appGatewayFqdn.value' -o tsv
+```
+
+### 5. Update Existing Stack
+
+```bash
+# Update stack (same command as create)
+az stack group create \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --template-file infrastructure/environments/dev/main.bicep \
+  --parameters infrastructure/environments/dev/parameters.json \
+  --deny-settings-mode none \
+  --action-on-unmanage deleteResources
+```
+
+### 6. Clean Up Resources
+
+```bash
+# Delete stack (automatically removes managed resources)
+az stack group delete \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --action-on-unmanage deleteAll \
+  --yes
+
+# Or delete entire resource group
+az group delete --name txttv-dev-rg --yes
+```
+
+## Deployment Stack Options
+
+### Deny Settings
+
+Control what operations are denied on stack-managed resources:
+
+- **none**: No deny assignments (default for dev/staging)
+- **denyDelete**: Prevent deletion of resources (recommended for production)
+- **denyWriteAndDelete**: Prevent modification and deletion (maximum protection)
+
+### Action on Unmanage
+
+Define what happens to resources removed from template:
+
+- **deleteResources**: Delete resources no longer in template (dev/staging)
+- **deleteAll**: Delete resources and resource groups
+- **detachAll**: Leave resources but remove from stack management (production safety)
+
+## Deployment Options
+
+### Validate Before Deploy
+
+```bash
+az stack group validate \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --template-file infrastructure/environments/dev/main.bicep \
+  --parameters infrastructure/environments/dev/parameters.json
+```
+
+### What-If Analysis
+
+```bash
+# See what changes will be made
+az deployment group what-if \
+  --resource-group txttv-dev-rg \
+  --template-file infrastructure/environments/dev/main.bicep \
+  --parameters infrastructure/environments/dev/parameters.json
+```
+
+### Deploy with Custom Parameters
+
+```bash
+az stack group create \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --template-file infrastructure/environments/dev/main.bicep \
+  --parameters apimPublisherEmail="your-email@example.com" \
+  --deny-settings-mode none
+```
+
+### List All Stacks
+
+```bash
+# List stacks in resource group
+az stack group list --resource-group txttv-dev-rg --output table
+
+# Show stack details
+az stack group show \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg
 ```
 
 ## Project Structure
 
 ```
-txttv/
-├── infrastructure/
-│   ├── scripts/
-│   │   ├── Deploy-Infrastructure.ps1    # Main deployment script
-│   │   ├── Remove-Infrastructure.ps1    # Cleanup script
-│   │   └── lib/                         # PowerShell modules
-│   │       ├── BicepHelpers.psm1
-│   │       ├── AzureAuth.psm1
-│   │       └── ErrorHandling.psm1
-│   ├── environments/
-│   │   ├── dev/
-│   │   │   ├── main.bicep
-│   │   │   └── parameters.json
-│   │   ├── staging/
-│   │   └── prod/
-│   └── modules/                         # Bicep infrastructure modules
-├── tools/
-│   └── TxtTv.TestUtility/              # F# HTTP test utility
-│       ├── CliArguments.fs
-│       ├── SignatureGenerator.fs
-│       ├── RequestLoader.fs
-│       ├── HttpClient.fs
-│       ├── ResponseFormatter.fs
-│       └── Program.fs
-├── examples/
-│   └── requests/
-│       ├── legitimate/                  # Valid test requests
-│       └── waf-tests/                   # WAF attack simulations
-└── tests/
-    ├── deployment/                      # PowerShell Pester tests
-    └── utility/                         # F# xUnit tests
+infrastructure/
+├── environments/
+│   ├── dev/
+│   │   ├── main.bicep              # Dev environment template
+│   │   └── parameters.json         # Dev environment parameters
+│   ├── staging/
+│   │   ├── main.bicep
+│   │   └── parameters.json
+│   └── prod/
+│       ├── main.bicep
+│       └── parameters.json
+└── modules/                         # Reusable Bicep modules
+    ├── apim/
+    ├── app-gateway/
+    ├── backend/
+    ├── storage/
+    └── waf/
 ```
 
-## Deployment Script Options
+## Environment Configuration
 
-### Deploy-Infrastructure.ps1
+All environments deploy to a **single resource group**:
+- Dev: `txttv-dev-rg`
+- Staging: `txttv-staging-rg`  
+- Production: `txttv-prod-rg`
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `-Environment` | Target environment (dev/staging/prod) | **Required** |
-| `-SubscriptionId` | Azure subscription ID | Current subscription |
-| `-ResourceGroupName` | Resource group name | `rg-txttv-<env>` |
-| `-Location` | Azure region | `westeurope` |
-| `-TimeoutMinutes` | Deployment timeout | `30` |
-| `-WhatIf` | Dry-run mode | `false` |
-| `-Force` | Skip confirmations | `false` |
-| `-Json` | JSON output | `false` |
-
-### Remove-Infrastructure.ps1
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `-Environment` | Target environment | **Required** |
-| `-ResourceGroupName` | Resource group name | `rg-txttv-<env>` |
-| `-DeleteResourceGroup` | Delete entire resource group | `true` |
-| `-PreserveData` | Skip storage accounts | `false` |
-| `-Force` | Skip confirmations | `false` |
-
-## Test Utility Commands
-
-### send - Send a single HTTP request
-
-```powershell
-dotnet run -- send [options]
-
-Options:
-  -u, --url <URL>              Target URL (required)
-  -m, --method <METHOD>        HTTP method (GET/POST/PUT/PATCH) [default: GET]
-  -b, --body <BODY>            Request body for POST/PUT
-  -h, --header <HEADER>        Custom header (Name: Value) [repeatable]
-  -k, --signature-key <KEY>    Secret key for HMAC signature
-  -s, --signature-header <HDR> Signature header name [default: X-TxtTV-Signature]
-  -v, --verbose                Verbose output
-```
-
-### load - Execute requests from JSON files
-
-```powershell
-dotnet run -- load [options]
-
-Options:
-  -f, --file <PATH>            JSON file or directory (required)
-  -k, --signature-key <KEY>    Secret key for HMAC signature
-  -s, --signature-header <HDR> Signature header name [default: X-TxtTV-Signature]
-  -c, --continue-on-error      Continue after failures
-  -v, --verbose                Verbose output
-```
-
-### list - List available request files
-
-```powershell
-dotnet run -- list [options]
-
-Options:
-  -d, --directory <PATH>       Directory to search [default: examples/requests]
-  -p, --pattern <PATTERN>      File pattern [default: *.json]
-  -r, --recursive              Search recursively
-```
-
-## Request File Format
-
-Example request definition (`request.json`):
-
-```json
-{
-  "name": "Get Page 100",
-  "description": "Fetch TxtTV home page",
-  "method": "GET",
-  "url": "https://your-apim.azure-api.net/pages/100",
-  "headers": {
-    "Accept": "application/json"
-  },
-  "body": null
-}
-```
-
-For WAF tests, add:
-
-```json
-{
-  "expectedBlocked": true,
-  "wafRule": "SQL Injection Protection"
-}
-```
-
-## WAF Testing
-
-The utility includes pre-built WAF test examples:
-
-- **SQL Injection**: Tests query parameter and body injection
-- **XSS Protection**: Tests cross-site scripting patterns
-- **Path Traversal**: Tests directory traversal attempts
-- **Command Injection**: Tests command injection in headers
-- **Rate Limiting**: Tests request throttling
-
-Run all WAF tests:
-
-```powershell
-cd tools\TxtTv.TestUtility
-dotnet run -- load -f "..\..\examples\requests\waf-tests" -k "your-key" -c -v
-```
-
-Expected behavior:
-- ✅ **Blocked requests** (403/429 status) indicate WAF is working
-- ⚠️ **Successful requests** with malicious payloads indicate potential security issues
+Each environment includes:
+- Azure API Management (APIM)
+- Application Gateway with WAF
+- Azure Functions Backend
+- Storage Account
+- Log Analytics Workspace
+- Application Insights
 
 ## Troubleshooting
 
-### Deployment Issues
+### Deployment Fails
 
-**Authentication error:**
-```powershell
-az login
-az account set --subscription "your-subscription-id"
+**Check stack status:**
+```bash
+az stack group list --resource-group txttv-dev-rg --output table
+
+# Show detailed stack information
+az stack group show \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg
 ```
 
-**Bicep validation fails:**
-```powershell
-bicep build infrastructure\environments\dev\main.bicep
+**View deployment errors:**
+```bash
+# Get provisioning state
+az stack group show \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --query 'provisioningState'
+
+# Check deployment operations (if needed)
+az deployment operation group list \
+  --resource-group txttv-dev-rg \
+  --name txttv-dev-stack \
+  --query "[?properties.provisioningState=='Failed']"
 ```
 
-**Resource naming conflicts:**
-- Storage accounts must be globally unique
-- Modify `parameters.json` to use unique names
-
-### Test Utility Issues
-
-**Build errors:**
-```powershell
-cd tools\TxtTv.TestUtility
-dotnet restore
-dotnet build
+**Validate Bicep template:**
+```bash
+az bicep build --file infrastructure/environments/dev/main.bicep
 ```
 
-**Connection timeout:**
-- Check APIM endpoint URL
-- Verify network connectivity
-- Increase timeout: modify `sendGetRequest` timeout parameter
+### Stack Already Exists
 
-**Signature mismatch:**
-- Verify the secret key matches backend configuration
-- Check timestamp synchronization
-- Ensure request body matches signed content
+If a stack already exists, the `create` command will update it. To start fresh:
 
-## Testing
+```bash
+# Delete existing stack first
+az stack group delete \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --action-on-unmanage deleteAll \
+  --yes
 
-### Run PowerShell Tests
-
-```powershell
-cd tests\deployment
-Invoke-Pester
+# Then create new stack
+az stack group create \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --template-file infrastructure/environments/dev/main.bicep \
+  --parameters infrastructure/environments/dev/parameters.json
 ```
 
-### Run F# Tests
+### Deny Settings Conflicts
 
-```powershell
-cd tests\utility
-dotnet test
+If you get deny assignment errors:
+
+```bash
+# Deploy with no deny settings initially
+az stack group create \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --template-file infrastructure/environments/dev/main.bicep \
+  --parameters infrastructure/environments/dev/parameters.json \
+  --deny-settings-mode none
+
+# Later, update with deny settings if needed
+az stack group create \
+  --name txttv-dev-stack \
+  --resource-group txttv-dev-rg \
+  --template-file infrastructure/environments/dev/main.bicep \
+  --parameters infrastructure/environments/dev/parameters.json \
+  --deny-settings-mode denyDelete
 ```
 
-## Development
+### Resource Naming Conflicts
 
-### Build Test Utility
+Storage accounts must be globally unique. Update `baseName` parameter in `parameters.json`:
 
-```powershell
-cd tools\TxtTv.TestUtility
-dotnet build --configuration Release
+```json
+{
+  "baseName": {
+    "value": "txttvunique123"
+  }
+}
 ```
 
-### Install Globally (Optional)
+## WAF Logging & Monitoring
 
-```powershell
-dotnet pack
-dotnet tool install --global --add-source ./nupkg TxtTv.TestUtility
-txttv-test send -u "https://example.com" -m GET
+All WAF events (blocked and allowed requests) are automatically logged to Log Analytics workspace.
+
+### Query WAF Logs in Log Analytics
+
+**Access Log Analytics:**
+1. Navigate to Azure Portal → Log Analytics workspace (e.g., `txttv-dev-law`)
+2. Click **Logs** in the left menu
+3. Run KQL queries to analyze WAF activity
+
+**All WAF events in last hour:**
+```kql
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS"
+| where Category == "ApplicationGatewayFirewallLog"
+| where TimeGenerated > ago(1h)
+| project TimeGenerated, clientIp_s, requestUri_s, action_s, ruleId_s, message_s
+| order by TimeGenerated desc
 ```
+
+**Only blocked requests:**
+```kql
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS"
+| where Category == "ApplicationGatewayFirewallLog"
+| where action_s == "Blocked"
+| where TimeGenerated > ago(1h)
+| project TimeGenerated, clientIp_s, requestUri_s, ruleId_s, message_s
+| order by TimeGenerated desc
+```
+
+**Blocked requests by source IP:**
+```kql
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS"
+| where Category == "ApplicationGatewayFirewallLog"
+| where action_s == "Blocked"
+| where TimeGenerated > ago(24h)
+| summarize BlockCount = count() by clientIp_s
+| order by BlockCount desc
+```
+
+**Most triggered WAF rules:**
+```kql
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS"
+| where Category == "ApplicationGatewayFirewallLog"
+| where TimeGenerated > ago(24h)
+| summarize TriggerCount = count() by ruleId_s, message_s
+| order by TriggerCount desc
+| take 10
+```
+
+### Troubleshooting WAF Blocks
+
+When users report blocked requests:
+
+1. **Find the blocked request:**
+   ```kql
+   AzureDiagnostics
+   | where ResourceType == "APPLICATIONGATEWAYS"
+   | where Category == "ApplicationGatewayFirewallLog"
+   | where clientIp_s == "user-ip-address"
+   | where TimeGenerated > ago(1h)
+   | project TimeGenerated, requestUri_s, action_s, ruleId_s, message_s, details_message_s
+   ```
+
+2. **Analyze the matched rule:**
+   - Check `ruleId_s` - Specific OWASP rule that triggered
+   - Check `message_s` - Human-readable rule description
+   - Check `details_message_s` - Exact pattern that matched
+
+3. **Determine if false positive:**
+   - Legitimate business use case → Consider WAF rule tuning
+   - Attack attempt → Keep block in place
+   - Edge case → Educate user or adjust application
+
+### Verify Diagnostic Settings
+
+**Check if logging is configured:**
+```bash
+# Get Application Gateway resource ID
+AG_ID=$(az network application-gateway show \
+  --name txttv-dev-appgw \
+  --resource-group txttv-dev-rg \
+  --query id -o tsv)
+
+# Check diagnostic settings
+az monitor diagnostic-settings list --resource $AG_ID
+```
+
+**Expected output:**
+```json
+{
+  "name": "txttv-dev-appgw-diagnostics",
+  "workspaceId": "/subscriptions/.../txttv-dev-law",
+  "logs": [
+    {
+      "category": "ApplicationGatewayFirewallLog",
+      "enabled": true
+    }
+  ]
+}
+```
+
+### No Logs Appearing?
+
+**Diagnosis steps:**
+1. Verify diagnostic settings exist (command above)
+2. Check WAF is enabled: SKU should be "WAF_v2"
+3. Generate test traffic (malicious request to trigger WAF)
+4. Wait 5-10 minutes for initial log ingestion
+5. Query Log Analytics
+
+**Common issues:**
+- **Diagnostic settings missing**: Redeploy infrastructure
+- **WAF not enabled**: Cannot log WAF events without WAF_v2 SKU
+- **Wrong workspace**: Check that WorkspaceId matches your Log Analytics workspace
 
 ## Security Notes
 
@@ -301,17 +420,7 @@ txttv-test send -u "https://example.com" -m GET
 
 1. **Secret Keys**: Never commit signature keys to source control
 2. **Parameters Files**: Use Azure Key Vault references for secrets in `parameters.json`
-3. **WAF Tests**: Only run malicious requests against your own test environments
-4. **Rate Limiting**: Be respectful when testing rate limits
-5. **Logging**: Signature keys are logged in verbose mode - use with caution
-
-## Contributing
-
-See the main repository README for contribution guidelines.
-
-## License
-
-See LICENSE file in the root directory.
+3. **Logging**: Be careful with verbose logging in production
 
 ## Support
 
