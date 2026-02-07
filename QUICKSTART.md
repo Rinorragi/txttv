@@ -195,11 +195,11 @@ When done testing, remove all Azure resources:
 # Navigate back to repository root (if not already there)
 # cd <path-to-your-txttv-repo>
 
-# Remove all resources (prompts for confirmation)
-.\infrastructure\scripts\Remove-Infrastructure.ps1 -Environment dev
-
-# Or force delete without confirmation
+# Remove all resources
 az stack group delete --name txttv-dev-stack --resource-group txttv-dev-rg --action-on-unmanage deleteAll --yes
+
+# Or delete entire resource group
+az group delete --name txttv-dev-rg --yes
 ```
 
 ---
@@ -243,8 +243,8 @@ az account show
 
 ### "Bicep validation failed"
 Check template syntax:
-```powershell
-bicep build infrastructure\environments\dev\main.bicep
+```bash
+az bicep build --file infrastructure/environments/dev/main.bicep
 ```
 
 ### "Deployment timeout"

@@ -36,7 +36,7 @@ The infrastructure changes are already committed to the repository. Deploy them 
 
 ```powershell
 # Navigate to repository root
-cd D:\ohjelmointi\txttv
+cd <repository-root>
 
 # Set your environment
 $environment = "dev"  # or "staging", "prod"
