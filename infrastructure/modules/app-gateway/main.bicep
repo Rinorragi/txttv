@@ -40,6 +40,9 @@ param vnetAddressPrefix string = '10.0.0.0/16'
 @description('Address prefix for the Application Gateway subnet')
 param subnetAddressPrefix string = '10.0.1.0/24'
 
+@description('Log Analytics workspace resource ID for diagnostic settings')
+param logAnalyticsWorkspaceId string = ''
+
 // Virtual Network
 resource vnet 'Microsoft.Network/virtualNetworks@2023-11-01' = {
   name: vnetName
@@ -220,3 +223,22 @@ output fqdn string = publicIp.properties.dnsSettings.fqdn
 
 @description('The virtual network ID')
 output vnetId string = vnet.id
+
+// Diagnostic Settings for WAF Logging
+resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(logAnalyticsWorkspaceId)) {
+  name: '${appGatewayName}-diagnostics'
+  scope: appGateway
+  properties: {
+    workspaceId: logAnalyticsWorkspaceId
+    logs: [
+      {
+        category: 'ApplicationGatewayFirewallLog'
+        enabled: true
+        retentionPolicy: {
+          enabled: false
+          days: 0
+        }
+      }
+    ]
+  }
+}

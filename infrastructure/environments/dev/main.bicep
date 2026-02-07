@@ -123,6 +123,7 @@ module appGateway '../modules/app-gateway/main.bicep' = {
     apimGatewayUrl: apim.outputs.apimGatewayUrl
     wafPolicyId: waf.outputs.wafPolicyId
     vnetName: vnetName
+    logAnalyticsWorkspaceId: logAnalytics.id
   }
 }
 

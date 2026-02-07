@@ -271,12 +271,134 @@ cd tests\deployment
 Invoke-Pester
 ```
 
+### Test Diagnostic Settings (WAF Logging)
+
+```powershell
+# Set environment variables
+$env:ENVIRONMENT_NAME = "dev"
+$env:RESOURCE_GROUP_NAME = "txttv-dev-rg"
+$env:AZURE_SUBSCRIPTION_ID = "your-subscription-id"
+
+# Run diagnostic settings tests
+Invoke-Pester tests\infrastructure\diagnostic-settings.tests.ps1
+```
+
 ### Run F# Tests
 
 ```powershell
 cd tests\utility
 dotnet test
 ```
+
+## WAF Logging & Monitoring
+
+### Query WAF Logs in Log Analytics
+
+All WAF events (blocked and allowed requests) are automatically logged to Log Analytics workspace.
+
+**Access Log Analytics:**
+1. Navigate to Azure Portal → Log Analytics workspace (e.g., `txttv-dev-law`)
+2. Click **Logs** in the left menu
+3. Run KQL queries to analyze WAF activity
+
+**Common Queries:**
+
+**All WAF events in last hour:**
+```kql
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS"
+| where Category == "ApplicationGatewayFirewallLog"
+| where TimeGenerated > ago(1h)
+| project TimeGenerated, clientIp_s, requestUri_s, action_s, ruleId_s, message_s
+| order by TimeGenerated desc
+```
+
+**Only blocked requests:**
+```kql
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS"
+| where Category == "ApplicationGatewayFirewallLog"
+| where action_s == "Blocked"
+| where TimeGenerated > ago(1h)
+| project TimeGenerated, clientIp_s, requestUri_s, ruleId_s, message_s
+| order by TimeGenerated desc
+```
+
+**Blocked requests by source IP:**
+```kql
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS"
+| where Category == "ApplicationGatewayFirewallLog"
+| where action_s == "Blocked"
+| where TimeGenerated > ago(24h)
+| summarize BlockCount = count() by clientIp_s
+| order by BlockCount desc
+```
+
+**Most triggered WAF rules:**
+```kql
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS"
+| where Category == "ApplicationGatewayFirewallLog"
+| where TimeGenerated > ago(24h)
+| summarize TriggerCount = count() by ruleId_s, message_s
+| order by TriggerCount desc
+| take 10
+```
+
+### Troubleshooting WAF Blocks
+
+When users report blocked requests:
+
+1. **Find the blocked request:**
+   ```kql
+   AzureDiagnostics
+   | where ResourceType == "APPLICATIONGATEWAYS"
+   | where Category == "ApplicationGatewayFirewallLog"
+   | where clientIp_s == "user-ip-address"
+   | where TimeGenerated > ago(1h)
+   | project TimeGenerated, requestUri_s, action_s, ruleId_s, message_s, details_message_s
+   ```
+
+2. **Analyze the matched rule:**
+   - Check `ruleId_s` - Specific OWASP rule that triggered
+   - Check `message_s` - Human-readable rule description
+   - Check `details_message_s` - Exact pattern that matched
+
+3. **Determine if false positive:**
+   - Legitimate business use case → Consider WAF rule tuning
+   - Attack attempt → Keep block in place
+   - Edge case → Educate user or adjust application
+
+### Verify Diagnostic Settings
+
+**Check if logging is configured:**
+```powershell
+$appGwId = (Get-AzApplicationGateway -Name "txttv-dev-appgw" -ResourceGroupName "txttv-dev-rg").Id
+Get-AzDiagnosticSetting -ResourceId $appGwId
+```
+
+**Expected output:**
+```
+Name                 : txttv-dev-appgw-diagnostics
+WorkspaceId          : /subscriptions/.../txttv-dev-law
+Logs[0].Category     : ApplicationGatewayFirewallLog
+Logs[0].Enabled      : True
+```
+
+### No Logs Appearing?
+
+**Diagnosis steps:**
+1. Verify diagnostic settings exist (command above)
+2. Check WAF is enabled: `Get-AzApplicationGateway` → Sku.Tier should be "WAF_v2"
+3. Generate test traffic (malicious request to trigger WAF)
+4. Wait 5-10 minutes for initial log ingestion
+5. Query Log Analytics
+
+**Common issues:**
+- **Diagnostic settings missing**: Redeploy infrastructure with `logAnalyticsWorkspaceId` parameter
+- **WAF not enabled**: Cannot log WAF events without WAF_v2 SKU
+- **Wrong workspace**: Check that WorkspaceId matches your environment's Log Analytics workspace
 
 ## Development
 
