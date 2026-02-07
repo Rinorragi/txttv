@@ -47,7 +47,7 @@ let handleSendCommand (args: ParseResults<SendArgs>) =
             printfn $"Sending {method} request to: {url}"
         
         // Create HTTP method
-        let httpMethod = new HttpMethod(method)
+        let httpMethod = HttpMethod(method)
         
         // Send request based on method
         let! response =
@@ -186,7 +186,7 @@ let handleLoadCommand (args: ParseResults<LoadArgs>) =
                                         else
                                             "application/json"
                                 
-                                let requestMethod = new HttpMethod(request.Method)
+                                let requestMethod = HttpMethod(request.Method)
                                 sendRequestWithBody requestMethod request.Url headers bodyStr contentType 30 |> Async.AwaitTask
                             | method ->
                                 eprintfn $"Error: Unsupported HTTP method: {method}"
