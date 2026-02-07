@@ -57,6 +57,23 @@ module HttpClient =
         client
 
     /// <summary>
+    /// Merges response headers and content headers into a single map.
+    /// </summary>
+    let private mergeResponseHeaders (response: HttpResponseMessage) =
+        let responseHeaders =
+            response.Headers
+            |> Seq.map (fun h -> h.Key, String.Join(", ", h.Value))
+            |> Map.ofSeq
+        
+        // Add content headers if present
+        if response.Content <> null then
+            response.Content.Headers
+            |> Seq.fold (fun acc h ->
+                Map.add h.Key (String.Join(", ", h.Value)) acc) responseHeaders
+        else
+            responseHeaders
+
+    /// <summary>
     /// Sends an HTTP GET request.
     /// </summary>
     let sendGetRequest (url: string) (headers: Map<string, string>) (timeoutSeconds: int) : Task<HttpResponse> =
@@ -78,20 +95,8 @@ module HttpClient =
                 
                 stopwatch.Stop()
                 
-                // Extract response headers
-                let responseHeaders =
-                    response.Headers
-                    |> Seq.map (fun h -> h.Key, String.Join(", ", h.Value))
-                    |> Map.ofSeq
-                
-                // Add content headers if present
-                let allHeaders =
-                    if response.Content <> null then
-                        response.Content.Headers
-                        |> Seq.fold (fun acc h ->
-                            Map.add h.Key (String.Join(", ", h.Value)) acc) responseHeaders
-                    else
-                        responseHeaders
+                // Extract response headers (including content headers)
+                let allHeaders = mergeResponseHeaders response
                 
                 return {
                     StatusCode = int response.StatusCode
@@ -163,23 +168,8 @@ module HttpClient =
                 
                 stopwatch.Stop()
                 
-                // Extract response headers
-                let responseHeaders =
-                    response.Headers
-                    |> Seq.map (fun h -> h.Key, String.Join(", ", h.Value))
-                    |> Map.ofSeq
-                    |> Map.fold (fun acc key value ->
-                        // Also include content headers
-                        Map.add key value acc) Map.empty
-                
-                // Add content headers if present
-                let allHeaders =
-                    if response.Content <> null then
-                        response.Content.Headers
-                        |> Seq.fold (fun acc h ->
-                            Map.add h.Key (String.Join(", ", h.Value)) acc) responseHeaders
-                    else
-                        responseHeaders
+                // Extract response headers (including content headers)
+                let allHeaders = mergeResponseHeaders response
                 
                 return {
                     StatusCode = int response.StatusCode
@@ -265,19 +255,8 @@ module HttpClient =
                     
                     stopwatch.Stop()
                     
-                    let responseHeaders =
-                        response.Headers
-                        |> Seq.map (fun h -> h.Key, String.Join(", ", h.Value))
-                        |> Map.ofSeq
-                    
-                    // Add content headers if present
-                    let allHeaders =
-                        if response.Content <> null then
-                            response.Content.Headers
-                            |> Seq.fold (fun acc h ->
-                                Map.add h.Key (String.Join(", ", h.Value)) acc) responseHeaders
-                        else
-                            responseHeaders
+                    // Extract response headers (including content headers)
+                    let allHeaders = mergeResponseHeaders response
                     
                     return {
                         StatusCode = int response.StatusCode
