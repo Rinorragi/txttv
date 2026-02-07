@@ -335,8 +335,8 @@ examples/requests/
 ### Execution
 1. Utility loads request definition from file
 2. Adds signature headers automatically:
-   - `X-TxtTv-Signature`: HMAC-SHA256 signature
-   - `X-TxtTv-Timestamp`: ISO 8601 timestamp
+   - `X-TxtTV-Signature`: HMAC-SHA256 signature
+   - `X-TxtTV-Timestamp`: ISO 8601 timestamp
 3. Sends HTTP request to configured base URL
 4. Captures response (status, headers, body)
 5. Compares actual vs expected behavior
