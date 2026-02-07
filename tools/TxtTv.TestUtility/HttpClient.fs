@@ -84,10 +84,19 @@ module HttpClient =
                     |> Seq.map (fun h -> h.Key, String.Join(", ", h.Value))
                     |> Map.ofSeq
                 
+                // Add content headers if present
+                let allHeaders =
+                    if response.Content <> null then
+                        response.Content.Headers
+                        |> Seq.fold (fun acc h ->
+                            Map.add h.Key (String.Join(", ", h.Value)) acc) responseHeaders
+                    else
+                        responseHeaders
+                
                 return {
                     StatusCode = int response.StatusCode
                     StatusDescription = response.ReasonPhrase
-                    Headers = responseHeaders
+                    Headers = allHeaders
                     Body = responseBody
                     IsSuccess = response.IsSuccessStatusCode
                     ErrorMessage = None
@@ -261,10 +270,19 @@ module HttpClient =
                         |> Seq.map (fun h -> h.Key, String.Join(", ", h.Value))
                         |> Map.ofSeq
                     
+                    // Add content headers if present
+                    let allHeaders =
+                        if response.Content <> null then
+                            response.Content.Headers
+                            |> Seq.fold (fun acc h ->
+                                Map.add h.Key (String.Join(", ", h.Value)) acc) responseHeaders
+                        else
+                            responseHeaders
+                    
                     return {
                         StatusCode = int response.StatusCode
                         StatusDescription = response.ReasonPhrase
-                        Headers = responseHeaders
+                        Headers = allHeaders
                         Body = responseBody
                         IsSuccess = response.IsSuccessStatusCode
                         ErrorMessage = None
