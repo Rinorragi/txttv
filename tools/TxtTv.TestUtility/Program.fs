@@ -166,7 +166,8 @@ let handleLoadCommand (args: ParseResults<LoadArgs>) =
                         | Some key ->
                             let timestamp = getCurrentTimestamp()
                             let bodyStr = bodyToString request.Body
-                            let signature = generateSignatureWithSortedQuery key request.Method request.Url bodyStr timestamp
+                            let normalizedMethod = request.Method.ToUpperInvariant()
+                            let signature = generateSignatureWithSortedQuery key normalizedMethod request.Url bodyStr timestamp
                             headers <- addSignatureHeaders headers signature timestamp signatureHeader
                         | None -> ()
                         
