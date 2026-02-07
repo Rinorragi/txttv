@@ -56,33 +56,75 @@ module RequestLoader =
                     else
                         None
                 
-                let request = {
-                    Name = root.GetProperty("name").GetString()
-                    Description =
-                        let mutable descElement = Unchecked.defaultof<JsonElement>
-                        if root.TryGetProperty("description", &descElement) then
-                            Some (descElement.GetString())
+                // Validate and parse required fields
+                let nameResult =
+                    let mutable nameElement = Unchecked.defaultof<JsonElement>
+                    if root.TryGetProperty("name", &nameElement) then
+                        let nameValue = nameElement.GetString()
+                        if String.IsNullOrWhiteSpace(nameValue) then
+                            Error "Required field 'name' is empty or null"
                         else
-                            None
-                    Method = root.GetProperty("method").GetString()
-                    Url = root.GetProperty("url").GetString()
-                    Headers = headers
-                    Body = body
-                    ExpectedBlocked =
-                        let mutable blockedElement = Unchecked.defaultof<JsonElement>
-                        if root.TryGetProperty("expectedBlocked", &blockedElement) then
-                            Some (blockedElement.GetBoolean())
-                        else
-                            None
-                    WafRule =
-                        let mutable ruleElement = Unchecked.defaultof<JsonElement>
-                        if root.TryGetProperty("wafRule", &ruleElement) then
-                            Some (ruleElement.GetString())
-                        else
-                            None
-                }
+                            Ok nameValue
+                    else
+                        Error "Required field 'name' is missing"
                 
-                Ok request
+                let methodResult =
+                    let mutable methodElement = Unchecked.defaultof<JsonElement>
+                    if root.TryGetProperty("method", &methodElement) then
+                        let methodValue = methodElement.GetString()
+                        if String.IsNullOrWhiteSpace(methodValue) then
+                            Error "Required field 'method' is empty or null"
+                        else
+                            Ok methodValue
+                    else
+                        Error "Required field 'method' is missing"
+                
+                let urlResult =
+                    let mutable urlElement = Unchecked.defaultof<JsonElement>
+                    if root.TryGetProperty("url", &urlElement) then
+                        let urlValue = urlElement.GetString()
+                        if String.IsNullOrWhiteSpace(urlValue) then
+                            Error "Required field 'url' is empty or null"
+                        else
+                            Ok urlValue
+                    else
+                        Error "Required field 'url' is missing"
+                
+                // Check for validation errors
+                match nameResult, methodResult, urlResult with
+                | Error e, _, _ -> Error e
+                | _, Error e, _ -> Error e
+                | _, _, Error e -> Error e
+                | Ok name, Ok method, Ok url ->
+                    let request = {
+                        Name = name
+                        Description =
+                            let mutable descElement = Unchecked.defaultof<JsonElement>
+                            if root.TryGetProperty("description", &descElement) then
+                                let descValue = descElement.GetString()
+                                if String.IsNullOrWhiteSpace(descValue) then None else Some descValue
+                            else
+                                None
+                        Method = method
+                        Url = url
+                        Headers = headers
+                        Body = body
+                        ExpectedBlocked =
+                            let mutable blockedElement = Unchecked.defaultof<JsonElement>
+                            if root.TryGetProperty("expectedBlocked", &blockedElement) then
+                                Some (blockedElement.GetBoolean())
+                            else
+                                None
+                        WafRule =
+                            let mutable ruleElement = Unchecked.defaultof<JsonElement>
+                            if root.TryGetProperty("wafRule", &ruleElement) then
+                                let ruleValue = ruleElement.GetString()
+                                if String.IsNullOrWhiteSpace(ruleValue) then None else Some ruleValue
+                            else
+                                None
+                    }
+                    
+                    Ok request
         with
         | ex -> Error $"Failed to load request file: {ex.Message}"
 
