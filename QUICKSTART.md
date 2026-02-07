@@ -32,8 +32,8 @@ az login
 Deploy the TxtTV infrastructure to Azure:
 
 ```powershell
-# Navigate to project root
-cd D:\ohjelmointi\txttv
+# Navigate to repository root (if not already there)
+# cd <path-to-your-txttv-repo>
 
 # Deploy to dev environment
 .\infrastructure\scripts\Deploy-Infrastructure.ps1 -Environment dev
@@ -183,8 +183,8 @@ If requests are NOT blocked (200 OK), your WAF needs configuration!
 When done testing, remove all Azure resources:
 
 ```powershell
-# Navigate back to root
-cd D:\ohjelmointi\txttv
+# Navigate back to repository root (if not already there)
+# cd <path-to-your-txttv-repo>
 
 # Remove all resources (prompts for confirmation)
 .\infrastructure\scripts\Remove-Infrastructure.ps1 -Environment dev
