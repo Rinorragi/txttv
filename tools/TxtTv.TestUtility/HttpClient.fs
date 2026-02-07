@@ -224,12 +224,12 @@ module HttpClient =
         match request.Method.Method.ToUpperInvariant() with
         | "GET" ->
             sendGetRequest request.Url request.Headers request.TimeoutSeconds
-        | "POST" ->
+        | "POST" | "PUT" | "PATCH" ->
             let body = request.Body |> Option.defaultValue ""
             let contentType = request.ContentType |> Option.defaultValue "application/json"
             sendRequestWithBody request.Method request.Url request.Headers body contentType request.TimeoutSeconds
-        | "PUT" | "DELETE" | "PATCH" ->
-            // For other methods, use a generic implementation similar to POST
+        | "DELETE" ->
+            // For DELETE, use a generic implementation
             async {
                 let stopwatch = System.Diagnostics.Stopwatch.StartNew()
                 
