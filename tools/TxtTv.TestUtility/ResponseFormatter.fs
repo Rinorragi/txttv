@@ -40,9 +40,9 @@ module ResponseFormatter =
     /// </summary>
     let private tryFormatJson (json: string) =
         try
-            let jsonDoc = JsonDocument.Parse(json)
+            use jsonDoc = JsonDocument.Parse(json)
             let options = JsonSerializerOptions(WriteIndented = true)
-            JsonSerializer.Serialize(jsonDoc, options)
+            JsonSerializer.Serialize(jsonDoc.RootElement, options)
         with
         | _ -> json
 
