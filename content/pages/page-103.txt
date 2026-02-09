@@ -1,25 +1,43 @@
-SPORTS NEWS
-===========
+Historical Case: 2017 Equifax Breach
+═════════════════════════════════════════════════
 
-Football Updates
-----------------
-Local team wins championship match 3-1
-in an exciting final yesterday.
+TXT TV SECURITY HISTORY - Page 103
 
-Tennis Open
------------
-Semi-finals begin this weekend with
-top seeds advancing as expected.
+LESSONS FROM EQUIFAX: Struts CVE-2017-5638
+-------------------------------------------------
 
-Athletics
----------
-National record broken in 100m sprint
-at the regional championships.
+INCIDENT OVERVIEW:
+March-July 2017: Attackers exploited unpatched
+Apache Struts vulnerability (CVE-2017-5638) to
+compromise Equifax systems.
 
-Swimming
---------
-New pool opens for Olympic training
-facility upgrades complete.
+IMPACT SCALE:
+• 147 million consumers affected
+• Social Security numbers exposed
+• Birth dates, addresses compromised
+• Credit card data for 209,000 stolen
+• Settlement: $700 million
 
----
-More sports on page 104 →
+ATTACK TIMELINE:
+March 7: Apache releases Struts patch
+March 10: Equifax vulnerability notice
+May 13: Initial breach (undetected)
+July 29: Breach discovered (76 days late)
+Sept 7: Public disclosure
+
+ROOT CAUSES:
+❌ Patch not applied for 2+ months
+❌ Vulnerability scanner missed the issue
+❌ SSL certificate expired (monitoring gap)
+❌ Segmentation failures
+❌ Inadequate logging
+
+KEY TAKEAWAYS:
+✓ Patch critical CVEs within 48 hours
+✓ Verify scanner coverage quarterly
+✓ Monitor certificate expiry
+✓ Implement defense in depth
+✓ Enable comprehensive audit logging
+
+─────────────────────────────────────────────────
+Prev: Mitigation (102) | Next: Ransomware (104)

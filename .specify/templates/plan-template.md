@@ -21,8 +21,8 @@
 -->
 
 **Primary Implementation**: [e.g., APIM policy fragments, Backend API, Frontend UI, or NEEDS CLARIFICATION]  
-**Language/Version**: [e.g., .NET 8 F#, Node.js 20, Python 3.11, or NEEDS CLARIFICATION]  
-**Infrastructure as Code**: [e.g., Bicep, Terraform 1.6+, ARM templates, or NEEDS CLARIFICATION]  
+**Language/Version**: [e.g., .NET 10 F# or NEEDS CLARIFICATION]  
+**Infrastructure as Code**: [e.g., Bicep or NEEDS CLARIFICATION]  
 **Cloud Platform**: [e.g., Azure (required for APIM/AppGW/WAF), AWS, GCP, or NEEDS CLARIFICATION]  
 **APIM Policies**: [if applicable, e.g., Policy fragments for TXT TV rendering, transformation logic, or N/A]  
 **Primary Dependencies**: [e.g., Azure Functions SDK, APIM policy libraries, FastAPI, or NEEDS CLARIFICATION]  

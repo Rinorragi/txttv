@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TXT TV Page {PAGE_NUMBER} - Retro text-based television interface">
+  <title>TXT TV - Page {PAGE_NUMBER}</title>
+  <style>{STYLE}</style>
+</head>
+<body>
+  <!-- Main Content Area -->
+  <div class="txttv-page">
+    <!-- Page Content (from content/pages/page-{PAGE_NUMBER}.txt) -->
+    <pre id="page-content">{CONTENT}</pre>
+    
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <a href="?page={PREV_PAGE}" title="Previous page (← or P)">← Previous</a>
+      <a href="?page=100" title="Home/Index (H)">Index</a>
+      <a href="?page={NEXT_PAGE}" title="Next page (→ or N)">Next →</a>
+    </div>
+    
+    <!-- Keyboard Shortcuts Help -->
+    <div class="keyboard-help">
+      <h3>Keyboard Shortcuts</h3>
+      <p>
+        <kbd>←</kbd> or <kbd>P</kbd> Previous page &nbsp;|&nbsp;
+        <kbd>→</kbd> or <kbd>N</kbd> Next page &nbsp;|&nbsp;
+        <kbd>H</kbd> Home &nbsp;|&nbsp;
+        <kbd>F</kbd> First page &nbsp;|&nbsp;
+        <kbd>L</kbd> Last page
+      </p>
+    </div>
+    
+    <!-- Status Bar -->
+    <div class="status-bar">
+      Page <span class="page-number">{PAGE_NUMBER}</span> of 11 (100-110)
+    </div>
+  </div>
+  
+  <!-- Load htmx from CDN (Constitution v1.2.2) -->
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" 
+          integrity="sha384-hKr8TsKESq9aihHvouWyL8K+fN9rkKltzl+nTVQY7qfPiHhzKkOHSGzlrNnXZVdM"
+          crossorigin="anonymous"></script>
+  
+  <!-- Navigation Script -->
+  <script>{SCRIPT}</script>
+</body>
+</html>

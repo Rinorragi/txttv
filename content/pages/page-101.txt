@@ -1,24 +1,39 @@
-TECHNOLOGY NEWS
-===============
+CVE-2026-12345 - Technical Deep Dive
+═════════════════════════════════════════════════
 
-Azure API Management Updates
-----------------------------
-Microsoft has released new capabilities for
-Azure API Management, including enhanced
-policy fragment support and improved WAF
-integration through Application Gateway.
+TXT TV SECURITY RESEARCH - Page 101
 
-Cloud Development Trends
-------------------------
-Serverless architectures continue to grow
-with Azure Functions leading the way for
-event-driven computing solutions.
+VULNERABILITY ANALYSIS: Struts RCE
+-------------------------------------------------
 
-F# Language Evolution
----------------------
-The .NET 10 release brings new features
-to F# developers, improving performance
-and developer productivity.
+ROOT CAUSE:
+Improperly validated OGNL expressions in the
+Content-Type header parser allows injection of
+arbitrary Java code during multipart request
+processing.
 
----
-More news on page 102 →
+EXPLOIT VECTOR:
+POST /upload HTTP/1.1
+Content-Type: %{(#_='multipart/form-data')
+.(#cmd='calc').(#iswin=(@java.lang.System@
+getProperty('os.name').toLowerCase().contains
+('win')))...}
+
+PAYLOAD CHARACTERISTICS:
+• No authentication required
+• Works through reverse proxies
+• Bypasses basic WAF regex filters
+• Can execute OS commands directly
+
+DETECTION INDICATORS:
+→ Unusual Content-Type headers (>200 chars)
+→ OGNL expression patterns: %{, #, @java
+→ Outbound connections to unexpected IPs
+→ New processes spawned by Java
+
+PATCH DETAILS:
+Struts 2.6.5 validates Content-Type against
+strict allowlist before OGNL evaluation.
+
+─────────────────────────────────────────────────
+Prev: Alert Summary (100) | Next: Mitigation (102)

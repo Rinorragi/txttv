@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TXT TV Page Viewer - Retro text-based television interface">
+  <title>TXT TV - Loading...</title>
+  <link rel="stylesheet" href="styles/txttv.css">
+</head>
+<body>
+  <!-- Main Content Area -->
+  <div class="txttv-page">
+    <!-- Page Content (dynamically loaded from content/pages/) -->
+    <pre id="page-content">Loading page content...</pre>
+    
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <a href="?page=100" title="Previous page (← or P)">← Previous</a>
+      <a href="index.html" title="Home/Index (H)">Index</a>
+      <a href="?page=101" title="Next page (→ or N)">Next →</a>
+    </div>
+    
+    <!-- Keyboard Shortcuts Help -->
+    <div class="keyboard-help">
+      <h3>Keyboard Shortcuts</h3>
+      <p>
+        <kbd>←</kbd> or <kbd>P</kbd> Previous page &nbsp;|&nbsp;
+        <kbd>→</kbd> or <kbd>N</kbd> Next page &nbsp;|&nbsp;
+        <kbd>H</kbd> Home &nbsp;|&nbsp;
+        <kbd>F</kbd> First page (100) &nbsp;|&nbsp;
+        <kbd>L</kbd> Last page (110)
+      </p>
+    </div>
+    
+    <!-- Status Bar -->
+    <div class="status-bar">
+      Page <span class="page-number">100</span> of 11 (100-110) &nbsp;|&nbsp; 
+      <span style="color: #0f0;">●</span> Local Development Mode
+    </div>
+  </div>
+  
+  <!-- Scripts -->
+  <script src="scripts/content-loader.js"></script>
+  <script src="scripts/navigation.js"></script>
+</body>
+</html>

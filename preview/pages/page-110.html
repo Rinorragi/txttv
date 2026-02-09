@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TXT TV - Page 110 Preview">
+  <title>TXT TV - Page 110</title>
+  <style>
+/* TxtTV Retro Stylesheet - Preview Version */
+body {
+    margin: 0;
+    padding: 20px;
+    background-color: #000;
+    color: #0f0;
+    font-family: 'Courier New', 'Lucida Console', monospace;
+    font-size: 16px;
+    line-height: 1.4;
+    min-height: 100vh;
+}
+
+.txttv-page {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #0f0;
+}
+
+#page-content {
+    margin-bottom: 20px;
+}
+
+.nav-links {
+    margin-top: 20px;
+    padding: 15px 0;
+    border-top: 2px solid #0f0;
+    border-bottom: 2px solid #0f0;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.nav-links a {
+    color: #0ff;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 16px;
+    border: 1px solid #0ff;
+    transition: all 0.2s ease;
+}
+
+.nav-links a:hover {
+    background-color: #0ff;
+    color: #000;
+}
+
+.nav-links a.disabled {
+    color: #555;
+    border-color: #555;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.status-bar {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #111;
+    border: 1px solid #0f0;
+    color: #ff0;
+    text-align: center;
+    font-size: 14px;
+}
+
+.keyboard-help {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #001a00;
+    border: 1px solid #0f0;
+    color: #0f0;
+}
+
+.keyboard-help h3 {
+    color: #0ff;
+    margin: 0 0 10px 0;
+    font-size: 1em;
+}
+
+.keyboard-help p {
+    margin: 0;
+    font-size: 14px;
+}
+
+kbd {
+    background-color: #333;
+    border: 1px solid #0ff;
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-family: 'Courier New', 'Lucida Console', monospace;
+    color: #0ff;
+}
+
+/* Index Page Styles */
+.page-selector {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.page-selector h1 {
+    color: #0ff;
+    margin-bottom: 30px;
+    font-size: 2em;
+    text-transform: uppercase;
+}
+
+.page-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    max-width: 800px;
+    margin: 0 auto 30px;
+}
+
+.page-link {
+    background-color: #111;
+    border: 2px solid #0f0;
+    color: #0ff;
+    padding: 20px;
+    text-decoration: none;
+    display: block;
+    font-size: 1.2em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: #0f0;
+    color: #000;
+    transform: scale(1.05);
+}
+
+.info-box {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #001a00;
+    border: 1px solid #0f0;
+    text-align: left;
+}
+
+.info-box h2 {
+    color: #ff0;
+    margin: 0 0 10px 0;
+    font-size: 1em;
+}
+  </style>
+</head>
+<body>
+  <div class="txttv-page">
+    <!-- Page Content -->
+    <pre id="page-content">LOCAL NEWS
+==========
+
+Community Events
+----------------
+Summer festival announced for next
+weekend at the town square.
+
+Traffic &amp; Transport
+-------------------
+Road works scheduled on main highway
+during off-peak hours.
+
+Local Politics
+--------------
+Council meeting to discuss new
+development proposals.
+
+Public Services
+---------------
+Library extends opening hours for
+summer reading program.
+
+---
+Thank you for using TXT TV!
+
+Return to home page: page 100
+
+---
+TXT TV - Your Community News Service
+</pre>
+    
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <a href="page-109.html" title="Previous page (← or P)">← Previous (109)</a>
+      <a href="index.html" title="Home/Index (H)">📺 Index</a>
+      <a href="#" class="disabled" title="Next page (→ or N)">Next (111) →</a>
+    </div>
+    
+    <!-- Keyboard Shortcuts Help -->
+    <div class="keyboard-help">
+      <h3>Keyboard Shortcuts</h3>
+      <p>
+        <kbd>←</kbd> or <kbd>P</kbd> Previous page &nbsp;|&nbsp;
+        <kbd>→</kbd> or <kbd>N</kbd> Next page &nbsp;|&nbsp;
+        <kbd>H</kbd> Home/Index
+      </p>
+    </div>
+    
+    <!-- Status Bar -->
+    <div class="status-bar">
+      Page <strong>110</strong> of 11 (100-110) &nbsp;|&nbsp; 
+      <span style="color: #0f0;">●</span> Local Preview Mode &nbsp;|&nbsp;
+      533 characters
+    </div>
+  </div>
+  
+  <!-- Keyboard Navigation Script -->
+  <script>
+    document.addEventListener('keydown', function(e) {
+      switch(e.key.toLowerCase()) {
+        case 'arrowleft':
+        case 'p':
+          if (110 > 100) window.location.href = 'page-109.html';
+          break;
+        case 'arrowright':
+        case 'n':
+          if (110 < 110) window.location.href = 'page-111.html';
+          break;
+        case 'h':
+          window.location.href = 'index.html';
+          break;
+      }
+    });
+  </script>
+</body>
+</html>

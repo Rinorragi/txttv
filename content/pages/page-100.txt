@@ -1,20 +1,29 @@
-BREAKING NEWS - Welcome to TXT TV
-===================================
+CRITICAL: CVE-2026-12345 - Remote Code Execution
+═══════════════════════════════════════════════
 
-TXT TV - Your text-based news service
+TXT TV SECURITY ALERT - Page 100
 
-This is a demonstration of Azure API Management
-policy-based HTML rendering, protected by
-Application Gateway WAF.
+BREAKING: Apache Struts Vulnerability Discovered
+-------------------------------------------------
+Security researchers discovered a critical remote
+code execution vulnerability affecting Apache 
+Struts 2.5.x through 2.6.4.
 
-HEADLINES:
-----------
-* Technology news on page 101
-* Weather forecast on page 102
-* Sports updates on page 103
+IMPACT: Allows unauthenticated attackers to
+execute arbitrary code on vulnerable servers.
 
-Navigate using the arrows below or enter
-a page number directly.
+AFFECTED SYSTEMS:
+* Apache Struts 2.5.0 - 2.6.4
+* Est. 500,000+ servers worldwide
+* Healthcare, finance sectors most exposed
 
----
-TXT TV - Powered by Azure APIM
+RECOMMENDED ACTIONS:
+→ Update to Struts 2.6.5+ immediately
+→ Review logs for suspicious activity
+→ Implement WAF rules (see page 105)
+
+More: Technical Analysis (101) | Mitigation (102)
+      Past Incidents (103) | WAF Config (105)
+
+─────────────────────────────────────────────────
+Severity: CRITICAL (CVSS 9.8) | 2026-02-09 08:45
