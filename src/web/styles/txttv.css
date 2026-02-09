@@ -1,0 +1,185 @@
+/* TxtTV Retro Stylesheet
+ * Target: Local browser development with APIM policy conversion
+ * Size: <5 KB optimized for inline policy fragments
+ * Version: 1.0.0
+ */
+
+/* === Base Layout === */
+body {
+  margin: 0;
+  padding: 20px;
+  background-color: #000;
+  color: #0f0;
+  font-family: 'Courier New', 'Lucida Console', monospace;
+  font-size: 16px;
+  line-height: 1.4;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === Page Container === */
+.txttv-page {
+  max-width: 800px;
+  margin: 0 auto;
+  flex: 1;
+}
+
+/* === Content Display === */
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #0f0;
+}
+
+/* === Navigation === */
+.nav-links {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #0f0;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  color: #0ff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+.nav-links a:active {
+  color: #f0f;
+}
+
+/* === Index/Landing Page === */
+.page-selector {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.page-selector h1 {
+  color: #0ff;
+  margin-bottom: 30px;
+  font-size: 2em;
+  text-transform: uppercase;
+}
+
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 15px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.page-link {
+  background-color: #111;
+  border: 2px solid #0f0;
+  color: #0ff;
+  padding: 20px;
+  text-decoration: none;
+  display: block;
+  font-size: 1.2em;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.page-link:hover {
+  background-color: #0f0;
+  color: #000;
+  transform: scale(1.05);
+}
+
+/* === Keyboard Shortcuts Help === */
+.keyboard-help {
+  margin-top: 30px;
+  padding: 15px;
+  border: 1px solid #0f0;
+  font-size: 0.9em;
+  color: #0ff;
+}
+
+.keyboard-help h3 {
+  margin-top: 0;
+  color: #fff;
+}
+
+.keyboard-help kbd {
+  background-color: #222;
+  border: 1px solid #0f0;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-family: inherit;
+  color: #0ff;
+}
+
+/* === Status Indicators === */
+.status-bar {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #111;
+  border: 1px solid #0f0;
+  font-size: 0.85em;
+  color: #0f0;
+}
+
+.status-bar .page-number {
+  color: #0ff;
+  font-weight: bold;
+}
+
+/* === Accessibility === */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* === Responsive Design === */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .page-grid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+  }
+  
+  .page-link {
+    padding: 15px 10px;
+    font-size: 1em;
+  }
+  
+  .nav-links {
+    gap: 10px;
+  }
+}
+
+/* === Print Styles === */
+@media print {
+  body {
+    background-color: #fff;
+    color: #000;
+  }
+  
+  .nav-links,
+  .keyboard-help,
+  .status-bar {
+    display: none;
+  }
+  
+  pre {
+    color: #000;
+  }
+}

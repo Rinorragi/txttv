@@ -488,3 +488,7 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Local web development
+*.log
+src/web/.DS_Store

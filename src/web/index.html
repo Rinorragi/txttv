@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TXT TV - Retro text-based television interface">
+  <title>TXT TV - Index</title>
+  <link rel="stylesheet" href="styles/txttv.css">
+</head>
+<body>
+  <div class="page-selector">
+    <h1>📺 TXT TV</h1>
+    <p style="color: #0ff; margin-bottom: 30px;">
+      Select a page to view (100-110)
+    </p>
+    
+    <!-- Page Grid -->
+    <div class="page-grid">
+      <a href="page.html?page=100" class="page-link" title="Sports">100</a>
+      <a href="page.html?page=101" class="page-link" title="Weather">101</a>
+      <a href="page.html?page=102" class="page-link" title="News">102</a>
+      <a href="page.html?page=103" class="page-link" title="Finance">103</a>
+      <a href="page.html?page=104" class="page-link" title="Entertainment">104</a>
+      <a href="page.html?page=105" class="page-link" title="Technology">105</a>
+      <a href="page.html?page=106" class="page-link" title="Travel">106</a>
+      <a href="page.html?page=107" class="page-link" title="Food">107</a>
+      <a href="page.html?page=108" class="page-link" title="Health">108</a>
+      <a href="page.html?page=109" class="page-link" title="Culture">109</a>
+      <a href="page.html?page=110" class="page-link" title="About">110</a>
+    </div>
+    
+    <!-- Keyboard Shortcuts Help -->
+    <div class="keyboard-help">
+      <h3>Keyboard Shortcuts (on page view)</h3>
+      <p>
+        <kbd>←</kbd> or <kbd>P</kbd> Previous page &nbsp;|&nbsp;
+        <kbd>→</kbd> or <kbd>N</kbd> Next page &nbsp;|&nbsp;
+        <kbd>H</kbd> Return to this index
+      </p>
+      <p style="margin-top: 10px; color: #0f0;">
+        <kbd>F</kbd> First page (100) &nbsp;|&nbsp;
+        <kbd>L</kbd> Last page (110)
+      </p>
+    </div>
+    
+    <!-- Local Development Notice -->
+    <div class="status-bar" style="margin-top: 40px;">
+      <strong>Local Development Mode</strong><br>
+      Simple HTML + htmx (no build tools required).<br>
+      Edit files in <code style="color: #0ff;">src/web/</code> and press <kbd>F5</kbd> to see changes.
+    </div>
+  </div>
+  
+  <!-- Navigation Script -->
+  <script src="scripts/navigation.js"></script>
+</body>
+</html>

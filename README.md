@@ -79,7 +79,28 @@ flowchart TB
 4. **Policy Fragment** (page-100.xml) returns pre-rendered HTML with HTMX
 5. **Browser** renders teletext-style page with navigation controls
 
-## Quick Start
+## Local Development
+
+### Prerequisites
+
+- **PowerShell 7+**: Included in Windows, or download from [microsoft.com/powershell](https://docs.microsoft.com/powershell/)
+- **Web Browser**: Any modern browser (Chrome, Edge, Firefox)
+
+### Quick Start
+
+```powershell
+# Open the web interface in your default browser
+.\infrastructure\scripts\start-dev-server.ps1
+
+# Or open directly
+Start-Process src\web\index.html
+```
+
+The local development environment allows you to edit HTML, CSS, and JavaScript files. Refresh your browser to see changes.
+
+For detailed setup instructions and workflow, see [Local Development Guide](specs/004-local-web-dev/quickstart.md).
+
+## Deployment Quick Start
 
 ```powershell
 # Convert content to policy fragments
@@ -92,3 +113,16 @@ az stack group create \
   --template-file infrastructure/environments/dev/main.bicep \
   --parameters @infrastructure/environments/dev/parameters.json
 ```
+
+## Local Development Workflow
+
+The TxtTV application supports local browser-based development before converting to Azure APIM policies:
+
+1. **Edit**: Modify HTML, CSS, and JavaScript in `src/web/` and refresh browser to see changes
+2. **Convert**: Run `.\infrastructure\scripts\convert-web-to-apim.ps1` to generate policy fragments
+3. **Deploy**: Push fragments to Azure using the deployment quick start above
+
+This workflow enables rapid iteration with instant browser feedback, then automated conversion to production-ready policy fragments with 4-layer validation (XML → Schema → Security → Integration).
+
+For complete setup instructions, see [Local Development Guide](specs/004-local-web-dev/quickstart.md).
+

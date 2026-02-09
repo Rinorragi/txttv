@@ -1,84 +1,203 @@
-<fragment>
-    <set-body><![CDATA[<!DOCTYPE html>
+﻿<fragment>
+  <set-body><![CDATA[<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TXT TV - Page 107</title>
-    <style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TXT TV Page 107 - Retro text-based television interface">
+  <title>TXT TV - Page 107</title>
+  <style>/* TxtTV Retro Stylesheet
+ * Target: Local browser development with APIM policy conversion
+ * Size: <5 KB optimized for inline policy fragments
+ * Version: 1.0.0
+ */
+
+/* === Base Layout === */
 body {
-    background-color: #000;
-    color: #0f0;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 16px;
-    line-height: 1.4;
-    margin: 0;
-    padding: 20px;
-    min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+  background-color: #000;
+  color: #0f0;
+  font-family: 'Courier New', 'Lucida Console', monospace;
+  font-size: 16px;
+  line-height: 1.4;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
-.header {
-    background-color: #00f;
-    color: #fff;
+
+/* === Page Container === */
+.txttv-page {
+  max-width: 800px;
+  margin: 0 auto;
+  flex: 1;
+}
+
+/* === Content Display === */
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #0f0;
+}
+
+/* === Navigation === */
+.nav-links {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #0f0;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  color: #0ff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+.nav-links a:active {
+  color: #f0f;
+}
+
+/* === Index/Landing Page === */
+.page-selector {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.page-selector h1 {
+  color: #0ff;
+  margin-bottom: 30px;
+  font-size: 2em;
+  text-transform: uppercase;
+}
+
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 15px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.page-link {
+  background-color: #111;
+  border: 2px solid #0f0;
+  color: #0ff;
+  padding: 20px;
+  text-decoration: none;
+  display: block;
+  font-size: 1.2em;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.page-link:hover {
+  background-color: #0f0;
+  color: #000;
+  transform: scale(1.05);
+}
+
+/* === Keyboard Shortcuts Help === */
+.keyboard-help {
+  margin-top: 30px;
+  padding: 15px;
+  border: 1px solid #0f0;
+  font-size: 0.9em;
+  color: #0ff;
+}
+
+.keyboard-help h3 {
+  margin-top: 0;
+  color: #fff;
+}
+
+.keyboard-help kbd {
+  background-color: #222;
+  border: 1px solid #0f0;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-family: inherit;
+  color: #0ff;
+}
+
+/* === Status Indicators === */
+.status-bar {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #111;
+  border: 1px solid #0f0;
+  font-size: 0.85em;
+  color: #0f0;
+}
+
+.status-bar .page-number {
+  color: #0ff;
+  font-weight: bold;
+}
+
+/* === Accessibility === */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* === Responsive Design === */
+@media (max-width: 600px) {
+  body {
     padding: 10px;
-    text-align: center;
-    margin-bottom: 20px;
-}
-.page-number {
-    color: #ff0;
-    font-weight: bold;
-}
-.content {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    margin-bottom: 20px;
-}
-nav {
-    display: flex;
+    font-size: 14px;
+  }
+  
+  .page-grid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
     gap: 10px;
-    align-items: center;
-    padding: 10px;
-    background-color: #333;
-    flex-wrap: wrap;
+  }
+  
+  .page-link {
+    padding: 15px 10px;
+    font-size: 1em;
+  }
+  
+  .nav-links {
+    gap: 10px;
+  }
 }
-button {
-    background-color: #00f;
-    color: #fff;
-    border: 2px solid #0ff;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 14px;
-}
-button:hover:not(:disabled) {
-    background-color: #0ff;
+
+/* === Print Styles === */
+@media print {
+  body {
+    background-color: #fff;
     color: #000;
+  }
+  
+  .nav-links,
+  .keyboard-help,
+  .status-bar {
+    display: none;
+  }
+  
+  pre {
+    color: #000;
+  }
 }
-button:disabled {
-    background-color: #555;
-    color: #888;
-    cursor: not-allowed;
-    border-color: #666;
-}
-input[type="number"] {
-    background-color: #000;
-    color: #0f0;
-    border: 2px solid #0ff;
-    padding: 10px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 14px;
-    width: 80px;
-}
-.htmx-request {
-    opacity: 0.5;
-}
-    </style>
+</style>
 </head>
 <body>
-    <div class="header">
-        <span class="page-number">PAGE 107</span> - TXT TV
-    </div>
-    <div id="content">
-        <pre class="content">BUSINESS &amp; FINANCE
+  <!-- Main Content Area -->
+  <div class="txttv-page">
+    <!-- Page Content (from content/pages/page-107.txt) -->
+    <pre id="page-content">BUSINESS & FINANCE
 ==================
 
 Stock Markets
@@ -104,17 +223,453 @@ cooling in major cities.
 ---
 More business news on page 108 →
 </pre>
+    
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <a href="?page=106" title="Previous page (← or P)">← Previous</a>
+      <a href="?page=100" title="Home/Index (H)">Index</a>
+      <a href="?page=108" title="Next page (→ or N)">Next →</a>
     </div>
-    <nav>
-        <button hx-get="/page/106" hx-target="body" hx-push-url="true" >&#9664; Previous</button>
-        <input type="number" id="pageNum" value="107" min="100" max="999" />
-        <button hx-get="/page/{pageNum}" hx-include="#pageNum" hx-target="body" hx-push-url="true" 
-                onclick="this.setAttribute('hx-get', '/page/' + document.getElementById('pageNum').value); htmx.process(this);">
-            Go to Page
-        </button>
-        <button hx-get="/page/108" hx-target="body" hx-push-url="true">Next &#9654;</button>
-    </nav>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Keyboard Shortcuts Help -->
+    <div class="keyboard-help">
+      <h3>Keyboard Shortcuts</h3>
+      <p>
+        <kbd>←</kbd> or <kbd>P</kbd> Previous page &nbsp;|&nbsp;
+        <kbd>→</kbd> or <kbd>N</kbd> Next page &nbsp;|&nbsp;
+        <kbd>H</kbd> Home &nbsp;|&nbsp;
+        <kbd>F</kbd> First page &nbsp;|&nbsp;
+        <kbd>L</kbd> Last page
+      </p>
+    </div>
+    
+    <!-- Status Bar -->
+    <div class="status-bar">
+      Page <span class="page-number">107</span> of 11 (100-110)
+    </div>
+  </div>
+  
+  <!-- Load htmx from CDN (Constitution v1.2.2) -->
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" 
+          integrity="sha384-hKr8TsKESq9aihHvouWyL8K+fN9rkKltzl+nTVQY7qfPiHhzKkOHSGzlrNnXZVdM"
+          crossorigin="anonymous"></script>
+  
+  <!-- Navigation Script -->
+  <script>
+// === content-loader.js ===
+/**
+ * TxtTV Content Loader Script
+ * Dynamically loads page content from content/pages/ directory
+ * Target: Local development environment with Node.js live-server
+ * Version: 1.0.0
+ */
+
+(function() {
+  'use strict';
+
+  // === Configuration ===
+  const CONFIG = {
+    contentPath: '../../content/pages',  // Relative to src/web/
+    minPage: 100,
+    maxPage: 110,
+    defaultPage: 100,
+    contentExtension: '.txt'
+  };
+
+  // === Utility Functions ===
+  
+  /**
+   * Get current page number from URL query string
+   * @returns {number} Page number (100-110)
+   */
+  function getCurrentPage() {
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get('page'), 10);
+    
+    if (isNaN(page) || page < CONFIG.minPage || page > CONFIG.maxPage) {
+      return CONFIG.defaultPage;
+    }
+    
+    return page;
+  }
+
+  /**
+   * Construct content file path for a given page
+   * @param {number} pageNumber - Page number
+   * @returns {string} Relative path to content file
+   */
+  function getContentPath(pageNumber) {
+    return `${CONFIG.contentPath}/page-${pageNumber}${CONFIG.contentExtension}`;
+  }
+
+  /**
+   * Load content from file via fetch API
+   * @param {number} pageNumber - Page number to load
+   * @returns {Promise<string>} Content text
+   */
+  async function loadContent(pageNumber) {
+    const path = getContentPath(pageNumber);
+    
+    try {
+      const response = await fetch(path);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const text = await response.text();
+      return text;
+    }
+    catch (error) {
+      console.error(`[TxtTV] Failed to load content for page ${pageNumber}:`, error);
+      return getErrorContent(pageNumber, error);
+    }
+  }
+
+  /**
+   * Generate error content when file cannot be loaded
+   * @param {number} pageNumber - Page number
+   * @param {Error} error - Error object
+   * @returns {string} Error message in TXT TV style
+   */
+  function getErrorContent(pageNumber, error) {
+    return `
+╔════════════════════════════════════════╗
+║         TXT TV - ERROR                 ║
+╠════════════════════════════════════════╣
+║                                        ║
+║  Page ${pageNumber} could not be loaded     ║
+║                                        ║
+║  Error: ${error.message.substring(0, 30).padEnd(30)} ║
+║                                        ║
+║  Please check:                         ║
+║  - Content file exists in              ║
+║    content/pages/page-${pageNumber}.txt       ║
+║  - Server is running from repo root    ║
+║  - File permissions are correct        ║
+║                                        ║
+╚════════════════════════════════════════╝
+
+Return to [Index](index.html)
+`;
+  }
+
+  /**
+   * Render content to the page content element
+   * @param {string} content - Text content to display
+   */
+  function renderContent(content) {
+    const contentElement = document.getElementById('page-content');
+    
+    if (!contentElement) {
+      console.error('[TxtTV] Element #page-content not found in DOM');
+      return;
+    }
+    
+    contentElement.textContent = content;
+  }
+
+  /**
+   * Update navigation links with current page context
+   * @param {number} currentPage - Current page number
+   */
+  function updateNavigation(currentPage) {
+    const prevPage = currentPage === CONFIG.minPage ? CONFIG.maxPage : currentPage - 1;
+    const nextPage = currentPage === CONFIG.maxPage ? CONFIG.minPage : currentPage + 1;
+    
+    // Update href attributes
+    const prevLink = document.querySelector('.nav-links a[title*="Previous"]');
+    const nextLink = document.querySelector('.nav-links a[title*="Next"]');
+    
+    if (prevLink) {
+      prevLink.href = `?page=${prevPage}`;
+    }
+    
+    if (nextLink) {
+      nextLink.href = `?page=${nextPage}`;
+    }
+    
+    // Update page number in status bar
+    const pageNumberSpan = document.querySelector('.page-number');
+    if (pageNumberSpan) {
+      pageNumberSpan.textContent = currentPage;
+    }
+    
+    // Update page title
+    document.title = `TXT TV - Page ${currentPage}`;
+  }
+
+  /**
+   * Show loading indicator while content is being fetched
+   */
+  function showLoadingIndicator() {
+    const contentElement = document.getElementById('page-content');
+    if (contentElement) {
+      contentElement.textContent = 'Loading page content...';
+      contentElement.style.opacity = '0.5';
+    }
+  }
+
+  /**
+   * Hide loading indicator after content is loaded
+   */
+  function hideLoadingIndicator() {
+    const contentElement = document.getElementById('page-content');
+    if (contentElement) {
+      contentElement.style.opacity = '1';
+    }
+  }
+
+  /**
+   * Main initialization function
+   */
+  async function init() {
+    const currentPage = getCurrentPage();
+    
+    console.log('[TxtTV] Content loader initialized', {
+      currentPage,
+      contentPath: CONFIG.contentPath,
+      pageRange: `${CONFIG.minPage}-${CONFIG.maxPage}`
+    });
+    
+    // Show loading state
+    showLoadingIndicator();
+    
+    try {
+      // Load and render content
+      const content = await loadContent(currentPage);
+      renderContent(content);
+      
+      // Update navigation
+      updateNavigation(currentPage);
+      
+      // Hide loading state
+      hideLoadingIndicator();
+      
+      console.log('[TxtTV] Content loaded successfully', {
+        page: currentPage,
+        contentLength: content.length
+      });
+    }
+    catch (error) {
+      console.error('[TxtTV] Initialization failed:', error);
+      hideLoadingIndicator();
+    }
+  }
+
+  // === Page Load Event ===
+  
+  // Run initialization when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // === Public API (for debugging) ===
+  window.TxtTvContentLoader = {
+    loadContent,
+    getCurrentPage,
+    getContentPath,
+    version: '1.0.0'
+  };
+
+})();
+
+// === navigation.js ===
+/**
+ * TxtTV Navigation Script
+ * Provides keyboard shortcuts and page navigation for local development
+ * Target: Browser environment with modern ES6+ support
+ * Version: 1.0.0
+ */
+
+(function() {
+  'use strict';
+
+  // === Configuration ===
+  const CONFIG = {
+    minPage: 100,
+    maxPage: 110,
+    defaultPage: 100,
+    keybindings: {
+      previous: ['ArrowLeft', 'p', 'P'],
+      next: ['ArrowRight', 'n', 'N'],
+      home: ['h', 'H', 'Home'],
+      first: ['f', 'F'],
+      last: ['l', 'L']
+    }
+  };
+
+  // === Utility Functions ===
+  
+  /**
+   * Get current page number from URL query string
+   * @returns {number} Page number (100-110)
+   */
+  function getCurrentPage() {
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get('page'), 10);
+    
+    if (isNaN(page) || page < CONFIG.minPage || page > CONFIG.maxPage) {
+      return CONFIG.defaultPage;
+    }
+    
+    return page;
+  }
+
+  /**
+   * Navigate to a specific page
+   * @param {number} pageNumber - Target page number
+   */
+  function navigateToPage(pageNumber) {
+    if (pageNumber < CONFIG.minPage || pageNumber > CONFIG.maxPage) {
+      console.warn(`Page ${pageNumber} out of range [${CONFIG.minPage}-${CONFIG.maxPage}]`);
+      return;
+    }
+    
+    window.location.href = `?page=${pageNumber}`;
+  }
+
+  /**
+   * Calculate previous page with wrapping
+   * @param {number} currentPage - Current page number
+   * @returns {number} Previous page number
+   */
+  function getPreviousPage(currentPage) {
+    return currentPage === CONFIG.minPage ? CONFIG.maxPage : currentPage - 1;
+  }
+
+  /**
+   * Calculate next page with wrapping
+   * @param {number} currentPage - Current page number
+   * @returns {number} Next page number
+   */
+  function getNextPage(currentPage) {
+    return currentPage === CONFIG.maxPage ? CONFIG.minPage : currentPage + 1;
+  }
+
+  // === Keyboard Navigation ===
+  
+  /**
+   * Handle keyboard events for navigation
+   * @param {KeyboardEvent} event - Keyboard event object
+   */
+  function handleKeyPress(event) {
+    // Ignore key presses when typing in input fields
+    if (event.target.tagName === 'INPUT' || 
+        event.target.tagName === 'TEXTAREA' ||
+        event.target.isContentEditable) {
+      return;
+    }
+
+    const currentPage = getCurrentPage();
+    let targetPage = null;
+
+    // Check which key was pressed
+    if (CONFIG.keybindings.previous.includes(event.key)) {
+      targetPage = getPreviousPage(currentPage);
+    } else if (CONFIG.keybindings.next.includes(event.key)) {
+      targetPage = getNextPage(currentPage);
+    } else if (CONFIG.keybindings.home.includes(event.key)) {
+      targetPage = CONFIG.defaultPage;
+    } else if (CONFIG.keybindings.first.includes(event.key)) {
+      targetPage = CONFIG.minPage;
+    } else if (CONFIG.keybindings.last.includes(event.key)) {
+      targetPage = CONFIG.maxPage;
+    }
+
+    if (targetPage !== null) {
+      event.preventDefault();
+      navigateToPage(targetPage);
+    }
+  }
+
+  // === Performance Monitoring ===
+  
+  /**
+   * Log page load performance metrics (development only)
+   */
+  function logPerformanceMetrics() {
+    if (!window.performance || !window.performance.timing) {
+      return;
+    }
+
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const timing = performance.timing;
+        const loadTime = timing.loadEventEnd - timing.navigationStart;
+        const domReady = timing.domContentLoadedEventEnd - timing.navigationStart;
+        
+        console.log('[TxtTV] Performance Metrics:');
+        console.log(`  Page Load: ${loadTime}ms`);
+        console.log(`  DOM Ready: ${domReady}ms`);
+        console.log(`  Current Page: ${getCurrentPage()}`);
+      }, 0);
+    });
+  }
+
+  // === Status Bar (if present) ===
+  
+  /**
+   * Update status bar with current page info
+   */
+  function updateStatusBar() {
+    const statusBar = document.querySelector('.status-bar');
+    if (!statusBar) return;
+
+    const currentPage = getCurrentPage();
+    const pageNumberSpan = statusBar.querySelector('.page-number');
+    
+    if (pageNumberSpan) {
+      pageNumberSpan.textContent = currentPage;
+    }
+  }
+
+  // === Initialization ===
+  
+  /**
+   * Initialize navigation system
+   */
+  function init() {
+    // Set up keyboard navigation
+    document.addEventListener('keydown', handleKeyPress);
+    
+    // Update status bar if present
+    updateStatusBar();
+    
+    // Enable performance logging in development
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      logPerformanceMetrics();
+    }
+
+    // Log initialization
+    console.log('[TxtTV] Navigation initialized', {
+      currentPage: getCurrentPage(),
+      pageRange: `${CONFIG.minPage}-${CONFIG.maxPage}`,
+      keybindings: CONFIG.keybindings
+    });
+  }
+
+  // Run initialization when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // === Public API (for debugging) ===
+  window.TxtTvNavigation = {
+    getCurrentPage,
+    navigateToPage,
+    getPreviousPage,
+    getNextPage,
+    version: '1.0.0'
+  };
+
+})();
+</script>
 </body>
-</html>]]></set-body>
+</html>
+]]></set-body>
 </fragment>

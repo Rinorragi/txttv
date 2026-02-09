@@ -1,29 +1,23 @@
 <!--
-Sync Impact Report - Constitution v1.2.1
+Sync Impact Report - Constitution v1.2.2
 ========================================
-Version: 1.2.0 → 1.2.1 (PATCH - Path reference convention)
-Rationale: Standardize file path references in documentation and code to use repository-relative
-paths instead of absolute paths with machine-specific drive letters. Improves portability,
-readability, and cross-platform compatibility.
+Version: 1.2.1 → 1.2.2 (PATCH - Web development simplification)
+Rationale: Clarify that web frontend development uses simple HTML with htmx loaded from CDN,
+eliminating build tooling complexity. No Node.js, webpack, or live-server required for local
+development. This aligns with the project's focus on APIM policy fragments as primary implementation
+surface - the web frontend is a demonstration UI, not a complex SPA requiring build pipelines.
 
-Change Log (v1.2.1):
-- Added Documentation Requirements section requiring repository-relative paths
-- File references must use paths relative to repository root (e.g., infrastructure/README.md)
-- Absolute paths with drive letters (e.g., d:\ohjelmointi\txttv\...) are prohibited in code/docs
-- Applies to all markdown documentation, code comments, and file references
+Change Log (v1.2.2):
+- Added Web Frontend subsection to Technology Stack clarifying simple HTML + htmx approach
+- Updated Development Workflow to specify no build tooling required for web development
+- Clarified that frontend is a demonstration surface, policy fragments are primary implementation
+- htmx 2.0.8 loaded directly from jsdelivr CDN (https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js)
+- Local development: open HTML files directly in browser, no server required for static content
 
-Change Log (v1.2.0):
-- Updated Principle IV to clarify infrastructure testing scope
-- Removed requirement for infrastructure deployment tests (Pester tests for Bicep deployments)
-- Emphasized that Azure's Bicep validation handles infrastructure validation
-- Explicitly prohibited creating deployment tests - Bicep validation is sufficient
-- Maintained requirements for application-level testing (APIM policies, WAF rules, backend functions)
+Modified Principles: None (clarification only)
 
-Modified Principles:
-- Principle IV: Removed infrastructure deployment testing requirement, added "Testing Scope" clarification
-
-Added Sections: 
-- Documentation Requirements: File path reference standards
+Added Sections:
+- Technology Stack → Web Frontend: Simple HTML + htmx specification
 
 Removed Sections: None
 
@@ -31,6 +25,8 @@ Templates Status:
 ✅ All templates remain compatible - no updates required
 
 Previous Versions:
+- v1.2.1 (2026-02-07): Path reference convention standardization
+- v1.2.0 (2026-02-07): APIM policy guidance expansion, removed infrastructure deployment tests
 - v1.1.0 (2026-02-07): APIM policy guidance expansion
 - v1.0.1 (2026-01-31): Specified Bicep and .NET F# Azure Functions
 - v1.0.0 (2026-01-31): Initial ratification with 5 core principles
@@ -154,6 +150,13 @@ Rollback procedures MUST be automated and tested.
 - Response composition
 - Policy fragment composition and reuse
 
+**Web Frontend**: Simple HTML with htmx (no build tooling required)
+- htmx 2.0.8 loaded from CDN: https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js
+- Static HTML, CSS, JavaScript files
+- No Node.js, webpack, Vite, or other build systems
+- No live-server or development server required (open HTML files directly in browser)
+- Frontend serves as demonstration UI; APIM policy fragments contain the primary business logic
+
 **Testing**: 
 - Bicep validation and linting
 - APIM policy testing (validation, transformation tests, fragment composition)
@@ -164,6 +167,13 @@ Rollback procedures MUST be automated and tested.
 **Monitoring**: Azure Monitor, Application Insights, Log Analytics
 
 ## Development Workflow
+
+**Web Frontend Development**:
+- Edit HTML, CSS, JavaScript files directly in `src/web/`
+- Open `src/web/index.html` in browser to view changes
+- No build step or development server required
+- Refresh browser to see updates
+- htmx loaded from CDN - no package manager or bundler needed
 
 **Branching**: Feature branches following pattern `###-feature-name` where ### is the spec issue/ticket number
 
@@ -183,7 +193,7 @@ Rollback procedures MUST be automated and tested.
 - APIM policies MUST document their purpose and configuration parameters
 - Deployment procedures MUST be documented in specs/ directory
 - File paths in documentation MUST be relative to repository root (e.g., `infrastructure/README.md`)
-- Absolute paths with drive letters (e.g., `d:\ohjelmointi\txttv\...`) are PROHIBITED in documentation and code
+- Absolute paths with drive letters are PROHIBITED in documentation and code
 - Use forward slashes for cross-platform compatibility in documentation
 
 ## Governance
@@ -208,4 +218,4 @@ This constitution supersedes all other development practices and guidelines.
 
 Use `.specify/memory/constitution.md` as the authoritative source for runtime development guidance.
 
-**Version**: 1.2.1 | **Ratified**: 2026-01-31 | **Last Amended**: 2026-02-07
+**Version**: 1.2.2 | **Ratified**: 2026-01-31 | **Last Amended**: 2026-02-09
