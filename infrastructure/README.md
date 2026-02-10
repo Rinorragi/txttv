@@ -39,28 +39,10 @@ Deployment stacks provide managed lifecycle, prevent accidental deletion, and en
 az stack group create \
   --name txttv-dev-stack \
   --resource-group txttv-dev-rg \
-  --template-file infrastructure/environments/dev/main.bicep \
-  --parameters infrastructure/environments/dev/parameters.json \
+  --template-file infrastructure/main.bicep \
+  --parameters infrastructure/parameters.json \
   --deny-settings-mode none \
   --action-on-unmanage deleteResources
-
-# Deploy to staging
-az stack group create \
-  --name txttv-staging-stack \
-  --resource-group txttv-staging-rg \
-  --template-file infrastructure/environments/staging/main.bicep \
-  --parameters infrastructure/environments/staging/parameters.json \
-  --deny-settings-mode none \
-  --action-on-unmanage deleteResources
-
-# Deploy to production (with deny assignments for safety)
-az stack group create \
-  --name txttv-prod-stack \
-  --resource-group txttv-prod-rg \
-  --template-file infrastructure/environments/prod/main.bicep \
-  --parameters infrastructure/environments/prod/parameters.json \
-  --deny-settings-mode denyDelete \
-  --action-on-unmanage detachAll
 ```
 
 ### 4. Get Deployment Outputs

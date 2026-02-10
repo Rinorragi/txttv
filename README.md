@@ -110,8 +110,8 @@ For detailed setup instructions and workflow, see [Local Development Guide](spec
 az stack group create \
   --name txttv-dev-stack \
   --resource-group txttv-dev-rg \
-  --template-file infrastructure/environments/dev/main.bicep \
-  --parameters @infrastructure/environments/dev/parameters.json
+  --template-file infrastructure/main.bicep \
+  --parameters @infrastructure/parameters.json
 ```
 
 ## Local Development Workflow
