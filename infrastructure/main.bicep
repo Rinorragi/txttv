@@ -90,7 +90,6 @@ module backend './modules/backend/main.bicep' = {
     functionAppName: functionAppName
     location: location
     tags: tags
-    storageAccountName: storage.outputs.storageAccountName
     storageConnectionString: storage.outputs.connectionString
     appInsightsConnectionString: appInsights.properties.ConnectionString
   }

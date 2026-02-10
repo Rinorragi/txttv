@@ -37,7 +37,7 @@ param backendFunctionUrl string = ''
 param skuName string = 'Developer'
 
 // APIM Instance (Developer tier for dev/test environment)
-resource apim 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
+resource apim 'Microsoft.ApiManagement/service@2024-05-01' = {
   name: apimName
   location: location
   tags: tags
@@ -55,7 +55,7 @@ resource apim 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
 }
 
 // Application Insights Logger
-resource apimLogger 'Microsoft.ApiManagement/service/loggers@2023-09-01-preview' = if (!empty(appInsightsId)) {
+resource apimLogger 'Microsoft.ApiManagement/service/loggers@2024-05-01' = if (!empty(appInsightsId)) {
   parent: apim
   name: 'appinsights-logger'
   properties: {
@@ -68,7 +68,7 @@ resource apimLogger 'Microsoft.ApiManagement/service/loggers@2023-09-01-preview'
 }
 
 // TXT TV API
-resource txttvApi 'Microsoft.ApiManagement/service/apis@2023-09-01-preview' = {
+resource txttvApi 'Microsoft.ApiManagement/service/apis@2024-05-01' = {
   parent: apim
   name: 'txttv-api'
   properties: {
@@ -84,7 +84,7 @@ resource txttvApi 'Microsoft.ApiManagement/service/apis@2023-09-01-preview' = {
 }
 
 // GET /page/{pageNumber} - Main page rendering operation
-resource getPageOperation 'Microsoft.ApiManagement/service/apis/operations@2023-09-01-preview' = {
+resource getPageOperation 'Microsoft.ApiManagement/service/apis/operations@2024-05-01' = {
   parent: txttvApi
   name: 'get-page'
   properties: {
@@ -118,7 +118,7 @@ resource getPageOperation 'Microsoft.ApiManagement/service/apis/operations@2023-
 }
 
 // GET / - Home page redirect
-resource getHomeOperation 'Microsoft.ApiManagement/service/apis/operations@2023-09-01-preview' = {
+resource getHomeOperation 'Microsoft.ApiManagement/service/apis/operations@2024-05-01' = {
   parent: txttvApi
   name: 'get-home'
   properties: {
@@ -135,7 +135,7 @@ resource getHomeOperation 'Microsoft.ApiManagement/service/apis/operations@2023-
 }
 
 // GET /backend-test - Backend connectivity test
-resource getBackendTestOperation 'Microsoft.ApiManagement/service/apis/operations@2023-09-01-preview' = {
+resource getBackendTestOperation 'Microsoft.ApiManagement/service/apis/operations@2024-05-01' = {
   parent: txttvApi
   name: 'get-backend-test'
   properties: {
@@ -157,7 +157,7 @@ resource getBackendTestOperation 'Microsoft.ApiManagement/service/apis/operation
 }
 
 // Backend for Function App
-resource functionBackend 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = if (!empty(backendFunctionUrl)) {
+resource functionBackend 'Microsoft.ApiManagement/service/backends@2024-05-01' = if (!empty(backendFunctionUrl)) {
   parent: apim
   name: 'function-backend'
   properties: {

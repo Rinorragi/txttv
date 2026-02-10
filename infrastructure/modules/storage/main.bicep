@@ -18,7 +18,7 @@ param tags object = {}
 ])
 param skuName string = 'Standard_LRS'
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2025-06-01' = {
   name: storageAccountName
   location: location
   tags: tags
@@ -32,13 +32,13 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     minimumTlsVersion: 'TLS1_2'
     allowBlobPublicAccess: false
     networkAcls: {
-      defaultAction: 'Deny'
+      defaultAction: 'Allow'
       bypass: 'AzureServices'
     }
   }
 }
 
-resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2025-06-01' = {
   parent: storageAccount
   name: 'default'
   properties: {
@@ -49,7 +49,7 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01'
   }
 }
 
-resource contentContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
+resource contentContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2025-06-01' = {
   parent: blobService
   name: 'content'
   properties: {
