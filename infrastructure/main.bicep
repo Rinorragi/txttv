@@ -1,10 +1,10 @@
-// Production environment orchestration for TXT TV
-// High-availability production deployment
+// Dev environment orchestration for TXT TV
+// Deploys all infrastructure modules for development environment
 
 targetScope = 'resourceGroup'
 
 @description('Environment name')
-param environmentName string = 'prod'
+param environmentName string = 'dev'
 
 @description('Location for all resources')
 param location string = resourceGroup().location
@@ -16,14 +16,13 @@ param baseName string = 'txttv'
 param apimPublisherEmail string
 
 @description('Publisher name for APIM')
-param apimPublisherName string = 'TXT TV Production'
+param apimPublisherName string = 'TXT TV Development'
 
 // Common tags
 var tags = {
   Environment: environmentName
   Project: 'TXT TV'
   ManagedBy: 'Bicep'
-  CriticalityLevel: 'High'
 }
 
 // Resource naming
@@ -45,7 +44,7 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
     sku: {
       name: 'PerGB2018'
     }
-    retentionInDays: 90 // Extended retention for production
+    retentionInDays: 30
   }
 }
 
@@ -62,18 +61,18 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 // Storage Account
-module storage '../modules/storage/main.bicep' = {
+module storage './modules/storage/main.bicep' = {
   name: 'storage-deployment'
   params: {
     storageAccountName: storageAccountName
     location: location
     tags: tags
-    skuName: 'Standard_ZRS' // Zone-redundant for production
+    skuName: 'Standard_LRS'
   }
 }
 
 // WAF Policy
-module waf '../modules/waf/main.bicep' = {
+module waf './modules/waf/main.bicep' = {
   name: 'waf-deployment'
   params: {
     wafPolicyName: wafPolicyName
@@ -85,7 +84,7 @@ module waf '../modules/waf/main.bicep' = {
 }
 
 // Azure Functions Backend
-module backend '../modules/backend/main.bicep' = {
+module backend './modules/backend/main.bicep' = {
   name: 'backend-deployment'
   params: {
     functionAppName: functionAppName
@@ -98,7 +97,7 @@ module backend '../modules/backend/main.bicep' = {
 }
 
 // API Management
-module apim '../modules/apim/main.bicep' = {
+module apim './modules/apim/main.bicep' = {
   name: 'apim-deployment'
   params: {
     apimName: apimName
@@ -113,17 +112,19 @@ module apim '../modules/apim/main.bicep' = {
 }
 
 // Application Gateway
-module appGateway '../modules/app-gateway/main.bicep' = {
+module appGateway './modules/app-gateway/main.bicep' = {
   name: 'appgateway-deployment'
   params: {
     appGatewayName: appGatewayName
     location: location
     tags: tags
     skuTier: 'WAF_v2'
-    capacity: 3 // Higher capacity for production
+    capacity: 1
     apimGatewayUrl: apim.outputs.apimGatewayUrl
     wafPolicyId: waf.outputs.wafPolicyId
-    vnetName: vnetName    logAnalyticsWorkspaceId: logAnalytics.id  }
+    vnetName: vnetName
+    logAnalyticsWorkspaceId: logAnalytics.id
+  }
 }
 
 // Outputs

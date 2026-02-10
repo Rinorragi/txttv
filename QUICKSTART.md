@@ -42,8 +42,8 @@ az group create --name txttv-dev-rg --location westeurope
 az stack group create `
   --name txttv-dev-stack `
   --resource-group txttv-dev-rg `
-  --template-file infrastructure/environments/dev/main.bicep `
-  --parameters infrastructure/environments/dev/parameters.json `
+  --template-file infrastructure/main.bicep `
+  --parameters infrastructure/parameters.json `
   --deny-settings-mode none `
   --action-on-unmanage deleteResources
 ```
@@ -208,7 +208,7 @@ az group delete --name txttv-dev-rg --yes
 
 ### Deploy Infrastructure
 ```powershell
-az stack group create --name txttv-<env>-stack --resource-group txttv-<env>-rg --template-file infrastructure/environments/<env>/main.bicep --parameters infrastructure/environments/<env>/parameters.json
+az stack group create --name txttv-<env>-stack --resource-group txttv-<env>-rg --template-file infrastructure/main.bicep --parameters infrastructure/parameters.json
 ```
 
 ### Send HTTP Request
@@ -244,13 +244,13 @@ az account show
 ### "Bicep validation failed"
 Check template syntax:
 ```bash
-az bicep build --file infrastructure/environments/dev/main.bicep
+az bicep build --file infrastructure/main.bicep
 ```
 
 ### "Deployment timeout"
 Increase timeout:
 ```powershell
-az stack group create --name txttv-dev-stack --resource-group txttv-dev-rg --template-file infrastructure/environments/dev/main.bicep --parameters infrastructure/environments/dev/parameters.json
+az stack group create --name txttv-dev-stack --resource-group txttv-dev-rg --template-file infrastructure/main.bicep --parameters infrastructure/parameters.json
 ```
 
 ### ".NET build errors"
