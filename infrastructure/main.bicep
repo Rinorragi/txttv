@@ -18,6 +18,9 @@ param apimPublisherEmail string
 @description('Publisher name for APIM')
 param apimPublisherName string = 'TXT TV Development'
 
+@description('Application Gateway public IP for APIM access restriction (set after first deployment)')
+param existingAppGatewayIp string = ''
+
 // Common tags
 var tags = {
   Environment: environmentName
@@ -90,7 +93,6 @@ module backend './modules/backend/main.bicep' = {
     functionAppName: functionAppName
     location: location
     tags: tags
-    storageAccountName: storage.outputs.storageAccountName
     storageConnectionString: storage.outputs.connectionString
     appInsightsConnectionString: appInsights.properties.ConnectionString
   }
@@ -108,6 +110,7 @@ module apim './modules/apim/main.bicep' = {
     appInsightsId: appInsights.id
     appInsightsInstrumentationKey: appInsights.properties.InstrumentationKey
     backendFunctionUrl: backend.outputs.functionAppUrl
+    appGatewayPublicIp: existingAppGatewayIp
   }
 }
 
@@ -134,3 +137,8 @@ output apimGatewayUrl string = apim.outputs.apimGatewayUrl
 output appGatewayPublicIp string = appGateway.outputs.publicIpAddress
 output appGatewayFqdn string = appGateway.outputs.fqdn
 output applicationInsightsConnectionString string = appInsights.properties.ConnectionString
+
+// Instructions for enabling APIM access restriction
+output apimAccessRestrictionNote string = empty(existingAppGatewayIp) 
+  ? 'Re-deploy with existingAppGatewayIp=${appGateway.outputs.publicIpAddress} to restrict APIM access to App Gateway only'
+  : 'APIM access restricted to App Gateway IP: ${existingAppGatewayIp}'

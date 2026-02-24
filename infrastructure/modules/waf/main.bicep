@@ -21,7 +21,7 @@ param wafMode string = 'Prevention'
 param rateLimitPerMinute int = 100
 
 // WAF Policy
-resource wafPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2023-11-01' = {
+resource wafPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2025-05-01' = {
   name: wafPolicyName
   location: location
   tags: tags
@@ -42,7 +42,7 @@ resource wafPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPo
               }
             ]
             operator: 'IPMatch'
-            negationCondition: true
+            negationConditon: true
             matchValues: [
               '127.0.0.1'
             ]
@@ -50,6 +50,7 @@ resource wafPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPo
         ]
         action: 'Block'
         state: 'Enabled'
+        groupByUserSession: [ { groupByVariables: [ { variableName: 'GeoLocation' }] }]
       }
       // Block SQL injection attempts in query parameters
       {
@@ -64,7 +65,7 @@ resource wafPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPo
               }
             ]
             operator: 'Contains'
-            negationCondition: false
+            negationConditon: false
             matchValues: [
               'select'
               'insert'
@@ -101,7 +102,7 @@ resource wafPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPo
               }
             ]
             operator: 'Contains'
-            negationCondition: false
+            negationConditon: false
             matchValues: [
               '<script'
               'javascript:'
@@ -133,7 +134,7 @@ resource wafPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPo
               }
             ]
             operator: 'Contains'
-            negationCondition: false
+            negationConditon: false
             matchValues: [
               '../'
               '..%2f'

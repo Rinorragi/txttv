@@ -1,0 +1,34 @@
+<!--
+    Home Redirect Policy for TXT TV
+    
+    This policy handles the GET / operation.
+    It redirects users to page 100 (the home page).
+-->
+<policies>
+    <inbound>
+        <base />
+        
+        <!-- Redirect to page 100 -->
+        <return-response>
+            <set-status code="302" reason="Found" />
+            <set-header name="Location" exists-action="override">
+                <value>/page/100</value>
+            </set-header>
+            <set-header name="Cache-Control" exists-action="override">
+                <value>no-cache</value>
+            </set-header>
+        </return-response>
+    </inbound>
+    
+    <backend>
+        <!-- No backend call - redirect handled by policy -->
+    </backend>
+    
+    <outbound>
+        <base />
+    </outbound>
+    
+    <on-error>
+        <base />
+    </on-error>
+</policies>

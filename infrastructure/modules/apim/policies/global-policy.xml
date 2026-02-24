@@ -2,6 +2,7 @@
     Global APIM Policy for TXT TV
     
     This policy applies to all operations and includes:
+    - Access restriction to Application Gateway only
     - Request logging with correlation IDs
     - CORS configuration
     - Security headers
@@ -9,7 +10,26 @@
 -->
 <policies>
     <inbound>
-        <base />
+        <!-- 
+            Access Restriction: Only allow traffic from Application Gateway
+            The named value 'appgw-public-ip' is set during deployment.
+            If not configured, access is allowed (for initial deployment).
+        -->
+        <set-variable name="allowedIp" value="{{appgw-public-ip}}" />
+        <choose>
+            <when condition="@{
+                var allowedIp = context.Variables.GetValueOrDefault<string>("allowedIp") ?? "";
+                return !string.IsNullOrEmpty(allowedIp) && context.Request.IpAddress != allowedIp;
+            }">
+                <return-response>
+                    <set-status code="403" reason="Forbidden" />
+                    <set-header name="Content-Type" exists-action="override">
+                        <value>application/json</value>
+                    </set-header>
+                    <set-body>{"error": "Access denied. Direct access to API is not allowed."}</set-body>
+                </return-response>
+            </when>
+        </choose>
         
         <!-- Generate and set correlation ID for tracing -->
         <set-variable name="correlationId" value="@(context.RequestId.ToString())" />
@@ -40,12 +60,9 @@
     </inbound>
     
     <backend>
-        <base />
     </backend>
     
     <outbound>
-        <base />
-        
         <!-- Security headers -->
         <set-header name="X-Content-Type-Options" exists-action="override">
             <value>nosniff</value>
@@ -74,8 +91,6 @@
     </outbound>
     
     <on-error>
-        <base />
-        
         <!-- Log errors -->
         <trace source="TxtTV-Global" severity="error">
             <message>@($"Error: {context.LastError.Message}")</message>
