@@ -1,5 +1,6 @@
 # Fragment Validation Integration Tests
 # Tests policy fragments for APIM compliance and security
+# Updated for two-API architecture: page-template + content fragments
 
 # Get repository root (whether running from tests/policies or elsewhere)
 if ($PSScriptRoot) {
@@ -14,256 +15,350 @@ if (Test-Path $validationFunctions) {
     . $validationFunctions
 }
 
-# Set fragment path
+# Set paths
 $fragmentPath = Join-Path $repoRoot "infrastructure/modules/apim/fragments"
+$contentSourcePath = Join-Path $repoRoot "content/pages"
 $expectedPages = 100..110
 
-Describe "Policy Fragment Validation" {
-    Context "Fragment Existence" {
+# ============================================================================
+# Content Fragment Validation (JSON Content API - US1)
+# ============================================================================
+
+Describe "Content Fragment Validation" {
+    Context "Content Fragment Existence" {
         It "Should have fragments directory" {
             Test-Path $fragmentPath | Should -BeTrue
         }
-        
-        It "Should contain all 11 page fragments (100-110)" {
-            $fragments = Get-ChildItem -Path $fragmentPath -Filter "page-*.xml"
+
+        It "Should contain all 11 content fragments (100-110)" {
+            $fragments = Get-ChildItem -Path $fragmentPath -Filter "content-*.xml"
             $fragments.Count | Should -Be 11
         }
-        
-        It "Should have fragment for page <_>" -TestCases @(
-            @{Page = 100}, @{Page = 101}, @{Page = 102}, @{Page = 103},
-            @{Page = 104}, @{Page = 105}, @{Page = 106}, @{Page = 107},
-            @{Page = 108}, @{Page = 109}, @{Page = 110}
-        ) {
-            param($Page)
-            $fragmentFile = Join-Path $fragmentPath "page-$Page.xml"
+
+        It "Should have content fragment for page <_>" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
             Test-Path $fragmentFile | Should -BeTrue
         }
     }
-    
-    Context "Fragment File Properties" {
-        It "Fragment page-<Page>.xml should have UTF-8 BOM encoding" -TestCases @(
-            @{Page = 100}, @{Page = 101}, @{Page = 102}, @{Page = 103},
-            @{Page = 104}, @{Page = 105}, @{Page = 106}, @{Page = 107},
-            @{Page = 108}, @{Page = 109}, @{Page = 110}
-        ) {
-            param($Page)
-            $fragmentFile = Join-Path $fragmentPath "page-$Page.xml"
-            $bytes = [System.IO.File]::ReadAllBytes($fragmentFile)
-            
-            # Check for UTF-8 BOM (EF BB BF)
-            if ($bytes.Length -ge 3) {
-                $hasBOM = ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
-                $hasBOM | Should -BeTrue -Because "APIM requires UTF-8 BOM encoding"
-            }
-        }
-        
-        It "Fragment page-<Page>.xml should be under 256 KB" -TestCases @(
-            @{Page = 100}, @{Page = 101}, @{Page = 102}, @{Page = 103},
-            @{Page = 104}, @{Page = 105}, @{Page = 106}, @{Page = 107},
-            @{Page = 108}, @{Page = 109}, @{Page = 110}
-        ) {
-            param($Page)
-            $fragmentFile = Join-Path $fragmentPath "page-$Page.xml"
-            $sizeKB = (Get-Item $fragmentFile).Length / 1KB
-            $sizeKB | Should -BeLessThan 256 -Because "APIM fragment size limit is 256 KB"
-        }
-    }
-    
-    Context "XML Well-Formedness" {
-        It "Fragment page-<_>.xml should be valid XML" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
+
+    Context "Content Fragment XML Well-Formedness" {
+        It "Content fragment content-<_>.xml should be valid XML" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
             $content = Get-Content $fragmentFile -Raw
-            
-            { 
+
+            {
                 $xml = New-Object System.Xml.XmlDocument
                 $xml.LoadXml($content)
             } | Should -Not -Throw
         }
-        
-        It "Fragment page-<_>.xml should have <fragment> root element" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
+
+        It "Content fragment content-<_>.xml should have <fragment> root element" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
             [xml]$xml = Get-Content $fragmentFile -Raw
-            
+
             $xml.DocumentElement.LocalName | Should -Be "fragment"
         }
-        
-        It "Fragment page-<_>.xml should have <set-body> element" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
+
+        It "Content fragment content-<_>.xml should have <return-response> element" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
             [xml]$xml = Get-Content $fragmentFile -Raw
-            
-            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
-            $setBody | Should -Not -BeNullOrEmpty
+
+            $returnResponse = $xml.DocumentElement.SelectSingleNode('return-response')
+            $returnResponse | Should -Not -BeNullOrEmpty
         }
-        
-        It "Fragment page-<_>.xml should have HTML in CDATA section" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
+
+        It "Content fragment content-<_>.xml should have <set-body> with CDATA" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
             [xml]$xml = Get-Content $fragmentFile -Raw
-            
-            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
+
+            $setBody = $xml.DocumentElement.SelectSingleNode('return-response/set-body')
+            $setBody | Should -Not -BeNullOrEmpty
+
             $cdataNode = $setBody.FirstChild
-            
             $cdataNode.NodeType | Should -Be ([System.Xml.XmlNodeType]::CDATA)
         }
     }
-    
-    Context "HTML Content Validation" {
-        It "Fragment page-<_>.xml should contain valid HTML5 DOCTYPE" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
+
+    Context "Content Fragment Headers" {
+        It "Content fragment content-<_>.xml should have Content-Type: application/json" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
             [xml]$xml = Get-Content $fragmentFile -Raw
-            
-            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
-            $htmlContent = $setBody.'#cdata-section'
-            
-            $htmlContent | Should -Match '<!DOCTYPE\s+html>'
+
+            $headers = $xml.DocumentElement.SelectNodes('return-response/set-header')
+            $contentTypeHeader = $headers | Where-Object { $_.name -eq 'Content-Type' }
+            $contentTypeHeader | Should -Not -BeNullOrEmpty
+            $contentTypeHeader.value | Should -Be 'application/json'
         }
-        
-        It "Fragment page-<_>.xml should have complete HTML structure" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
+
+        It "Content fragment content-<_>.xml should have Cache-Control header" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
             [xml]$xml = Get-Content $fragmentFile -Raw
-            
-            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
-            $htmlContent = $setBody.'#cdata-section'
-            
-            $htmlContent | Should -Match '<html[^>]*>'
-            $htmlContent | Should -Match '<head>'
-            $htmlContent | Should -Match '<body>'
-            $htmlContent | Should -Match '</html>'
+
+            $headers = $xml.DocumentElement.SelectNodes('return-response/set-header')
+            $cacheHeader = $headers | Where-Object { $_.name -eq 'Cache-Control' }
+            $cacheHeader | Should -Not -BeNullOrEmpty
+            $cacheHeader.value | Should -Match 'max-age='
         }
-        
-        It "Fragment page-<_>.xml should include page number in content" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
+
+        It "Content fragment content-<_>.xml should have status code 200" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
             [xml]$xml = Get-Content $fragmentFile -Raw
-            
-            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
-            $htmlContent = $setBody.'#cdata-section'
-            
-            $htmlContent | Should -Match $_ -Because "Page number should appear in the content"
-        }
-        
-        It "Fragment page-<_>.xml should have navigation links" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
-            [xml]$xml = Get-Content $fragmentFile -Raw
-            
-            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
-            $htmlContent = $setBody.'#cdata-section'
-            
-            $htmlContent | Should -Match 'Previous' -Because "Should have previous link"
-            $htmlContent | Should -Match 'Next' -Because "Should have next link"
-            $htmlContent | Should -Match 'Index' -Because "Should have index link"
+
+            $setStatus = $xml.DocumentElement.SelectSingleNode('return-response/set-status')
+            $setStatus | Should -Not -BeNullOrEmpty
+            $setStatus.code | Should -Be '200'
         }
     }
-    
-    Context "CSS and JavaScript Inclusion" {
-        It "Fragment page-<_>.xml should have inline CSS" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
-            [xml]$xml = Get-Content $fragmentFile -Raw
-            
-            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
-            $htmlContent = $setBody.'#cdata-section'
-            
-            $htmlContent | Should -Match '<style>.*</style>' -Because "CSS should be inlined"
+
+    Context "Content Fragment JSON Payload" {
+        It "Content fragment content-<_>.xml CDATA should contain valid JSON" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
+            $raw = Get-Content $fragmentFile -Raw
+            $match = [regex]::Match($raw, '<!\[CDATA\[([\s\S]*?)\]\]>')
+            $match.Success | Should -BeTrue
+
+            $jsonText = $match.Groups[1].Value
+            { $jsonText | ConvertFrom-Json } | Should -Not -Throw
         }
-        
-        It "Fragment page-<_>.xml should include htmx from CDN" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
-            [xml]$xml = Get-Content $fragmentFile -Raw
-            
-            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
-            $htmlContent = $setBody.'#cdata-section'
-            
-            $htmlContent | Should -Match 'https://cdn\.jsdelivr\.net/npm/htmx\.org@2\.0\.8' -Because "htmx 2.0.8 should be loaded from CDN per constitution v1.2.2"
+
+        It "Content fragment content-<_>.xml JSON should have required fields" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
+            $raw = Get-Content $fragmentFile -Raw
+            $match = [regex]::Match($raw, '<!\[CDATA\[([\s\S]*?)\]\]>')
+            $json = $match.Groups[1].Value | ConvertFrom-Json
+
+            $json.pageNumber | Should -Be $_
+            $json.title | Should -Not -BeNullOrEmpty
+            $json.category | Should -Not -BeNullOrEmpty
+            $json.content | Should -Not -BeNullOrEmpty
+            $json.navigation | Should -Not -BeNullOrEmpty
         }
-        
-        It "Fragment page-<_>.xml should have navigation script" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
-            [xml]$xml = Get-Content $fragmentFile -Raw
-            
-            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
-            $htmlContent = $setBody.'#cdata-section'
-            
-            $htmlContent | Should -Match '<script>.*</script>' -Because "Navigation script should be included"
-        }
-    }
-    
-    Context "Fragment ID Naming Convention" {
-        It "Fragment page-<_>.xml should follow naming convention" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
-            $fileName = (Get-Item $fragmentFile).Name
-            
-            $fileName | Should -Match '^page-\d{3}\.xml$' -Because "Filename should be page-NNN.xml"
+
+        It "Content fragment content-<_>.xml JSON should be byte-identical to source" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
+            $sourceFile = Join-Path $contentSourcePath "page-$_.json"
+
+            if (Test-Path $sourceFile) {
+                $raw = Get-Content $fragmentFile -Raw
+                $match = [regex]::Match($raw, '<!\[CDATA\[([\s\S]*?)\]\]>')
+                $cdataJson = $match.Groups[1].Value
+
+                $sourceJson = Get-Content $sourceFile -Raw
+                $cdataJson | Should -Be $sourceJson -Because "CDATA JSON must be byte-identical to source file"
+            }
         }
     }
-    
+
+    Context "Content Fragment Size Limits" {
+        It "Content fragment content-<_>.xml should be under 256 KB" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
+            $sizeKB = (Get-Item $fragmentFile).Length / 1KB
+            $sizeKB | Should -BeLessThan 256 -Because "APIM fragment size limit is 256 KB"
+        }
+
+        It "Content fragment content-<_>.xml should be under 2 KB (small JSON)" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
+            $sizeKB = (Get-Item $fragmentFile).Length / 1KB
+            $sizeKB | Should -BeLessThan 2 -Because "Content fragments should be minimal JSON wrappers"
+        }
+    }
+}
+
+# ============================================================================
+# Page Template Fragment Validation (Page API - US2)
+# ============================================================================
+
+Describe "Page Template Fragment Validation" {
+    Context "Page Template Existence" {
+        It "Should have page-template.xml" {
+            $templateFile = Join-Path $fragmentPath "page-template.xml"
+            Test-Path $templateFile | Should -BeTrue
+        }
+    }
+
+    Context "Page Template XML Well-Formedness" {
+        It "page-template.xml should be valid XML" {
+            $templateFile = Join-Path $fragmentPath "page-template.xml"
+            $content = Get-Content $templateFile -Raw
+
+            {
+                $xml = New-Object System.Xml.XmlDocument
+                $xml.LoadXml($content)
+            } | Should -Not -Throw
+        }
+
+        It "page-template.xml should have <fragment> root element" {
+            $templateFile = Join-Path $fragmentPath "page-template.xml"
+            [xml]$xml = Get-Content $templateFile -Raw
+
+            $xml.DocumentElement.LocalName | Should -Be "fragment"
+        }
+
+        It "page-template.xml should have <set-body> with CDATA" {
+            $templateFile = Join-Path $fragmentPath "page-template.xml"
+            [xml]$xml = Get-Content $templateFile -Raw
+
+            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
+            $setBody | Should -Not -BeNullOrEmpty
+
+            $cdataNode = $setBody.FirstChild
+            $cdataNode.NodeType | Should -Be ([System.Xml.XmlNodeType]::CDATA)
+        }
+    }
+
+    Context "Page Template HTML Content" {
+        BeforeAll {
+            $templateFile = Join-Path $fragmentPath "page-template.xml"
+            [xml]$xml = Get-Content $templateFile -Raw
+            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
+            $script:htmlContent = $setBody.'#cdata-section'
+        }
+
+        It "Should contain valid HTML5 DOCTYPE" {
+            $script:htmlContent | Should -Match '<!DOCTYPE\s+html>'
+        }
+
+        It "Should have complete HTML structure" {
+            $script:htmlContent | Should -Match '<html[^>]*>'
+            $script:htmlContent | Should -Match '<head>'
+            $script:htmlContent | Should -Match '<body>'
+            $script:htmlContent | Should -Match '</html>'
+        }
+
+        It "Should have inline CSS" {
+            $script:htmlContent | Should -Match '<style>.*</style>'
+        }
+
+        It "Should include htmx from CDN" {
+            $script:htmlContent | Should -Match 'https://cdn\.jsdelivr\.net/npm/htmx\.org@2\.0\.8'
+        }
+
+        It "Should have page-content element for dynamic loading" {
+            $script:htmlContent | Should -Match 'id="page-content"'
+        }
+
+        It "Should have content-renderer script inlined" {
+            $script:htmlContent | Should -Match 'TxtTvContentRenderer'
+        }
+
+        It "Should have navigation script inlined" {
+            $script:htmlContent | Should -Match '<script>.*</script>'
+        }
+
+        It "Should have APIM page number expression in meta tag" {
+            $script:htmlContent | Should -Match 'name="page-number"'
+            $script:htmlContent | Should -Match 'context\.Variables\.GetValueOrDefault'
+        }
+
+        It "Should have navigation links with correct IDs" {
+            $script:htmlContent | Should -Match 'id="nav-prev"'
+            $script:htmlContent | Should -Match 'id="nav-next"'
+        }
+
+        It "Should NOT contain page-specific content" {
+            # The template must be shared across all pages
+            $script:htmlContent | Should -Not -Match 'PAGE 100|PAGE 101'
+            $script:htmlContent | Should -Not -Match 'BREAKING NEWS|TECHNOLOGY'
+        }
+    }
+
+    Context "Page Template Size" {
+        It "page-template.xml should be under 256 KB" {
+            $templateFile = Join-Path $fragmentPath "page-template.xml"
+            $sizeKB = (Get-Item $templateFile).Length / 1KB
+            $sizeKB | Should -BeLessThan 256 -Because "APIM fragment size limit is 256 KB"
+        }
+    }
+}
+
+# ============================================================================
+# Supporting Fragment Validation (Error Page, Navigation Template)
+# ============================================================================
+
+Describe "Supporting Fragment Validation" {
+    Context "Error Page Fragment" {
+        It "Should have error-page.xml" {
+            $errorFile = Join-Path $fragmentPath "error-page.xml"
+            Test-Path $errorFile | Should -BeTrue
+        }
+
+        It "error-page.xml should be valid XML" {
+            $errorFile = Join-Path $fragmentPath "error-page.xml"
+            { [xml](Get-Content $errorFile -Raw) } | Should -Not -Throw
+        }
+    }
+
+    Context "Navigation Template Fragment" {
+        It "Should have navigation-template.xml" {
+            $navFile = Join-Path $fragmentPath "navigation-template.xml"
+            Test-Path $navFile | Should -BeTrue
+        }
+
+        It "navigation-template.xml should be valid XML" {
+            $navFile = Join-Path $fragmentPath "navigation-template.xml"
+            { [xml](Get-Content $navFile -Raw) } | Should -Not -Throw
+        }
+    }
+}
+
+# ============================================================================
+# Fragment Count and Naming
+# ============================================================================
+
+Describe "Fragment Count and Naming" {
     Context "Fragment Count Limits" {
         It "Should have no more than 100 fragments (APIM limit)" {
             $fragments = Get-ChildItem -Path $fragmentPath -Filter "*.xml" -File
             $fragments.Count | Should -BeLessOrEqual 100 -Because "APIM has a 100 fragment limit"
         }
     }
-    
-    Context "CSS Consistency" {
-        It "All fragments should have the same CSS content" {
-            $cssContents = @{}
-            
-            foreach ($page in 100..110) {
-                $fragmentFile = Join-Path $fragmentPath "page-$page.xml"
-                [xml]$xml = Get-Content $fragmentFile -Raw
-                
-                $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
-                $htmlContent = $setBody.'#cdata-section'
-                
-                # Extract CSS content
-                if ($htmlContent -match '<style>(.*?)</style>') {
-                    $cssContents[$page] = $matches[1]
-                }
-            }
-            
-            # Compare all CSS contents
-            $uniqueCssCount = ($cssContents.Values | Sort-Object -Unique).Count
-            $uniqueCssCount | Should -Be 1 -Because "All fragments should use the same CSS"
+
+    Context "Content Fragment Naming Convention" {
+        It "Content fragment content-<_>.xml should follow naming convention" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
+            $fileName = (Get-Item $fragmentFile).Name
+
+            $fileName | Should -Match '^content-\d{3}\.xml$' -Because "Filename should be content-NNN.xml"
         }
     }
 }
 
+# ============================================================================
+# Security Validation
+# ============================================================================
+
 Describe "Security Validation" {
-    Context "XSS Prevention" {
-        It "Fragment page-<_>.xml should not have unescaped CDATA terminators" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
+    Context "Content Fragment Security" {
+        It "Content fragment content-<_>.xml should not have unescaped CDATA terminators" -ForEach (100..110) {
+            $fragmentFile = Join-Path $fragmentPath "content-$_.xml"
             $content = Get-Content $fragmentFile -Raw
-            
-            # Check for ]]> inside CDATA that isn't properly escaped
-            # Properly escaped: ]]]]><![CDATA[>
+
             $cdataPattern = '<!\[CDATA\[(.*?)\]\]>'
             if ($content -match $cdataPattern) {
                 $cdataContent = $matches[1]
-                
-                # If ]]> exists in CDATA content, it must be escaped
+
                 if ($cdataContent -match '\]\]>') {
                     $cdataContent | Should -Match '\]\]\]\]><!\[CDATA\[>' -Because "]]> must be escaped inside CDATA"
                 }
             }
         }
-        
-        It "Fragment page-<_>.xml should not have inline event handlers in HTML" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
-            [xml]$xml = Get-Content $fragmentFile -Raw
-            
+    }
+
+    Context "Page Template Security" {
+        BeforeAll {
+            $templateFile = Join-Path $fragmentPath "page-template.xml"
+            [xml]$xml = Get-Content $templateFile -Raw
             $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
-            $htmlContent = $setBody.'#cdata-section'
-            
-            # Check for onclick, onerror, etc.
-            $htmlContent | Should -Not -Match '\son\w+\s*=' -Because "Inline event handlers are XSS risks"
+            $script:templateHtml = $setBody.'#cdata-section'
         }
-        
-        It "Fragment page-<_>.xml should not use eval() or Function()" -ForEach (100..110) {
-            $fragmentFile = Join-Path $fragmentPath "page-$_.xml"
-            [xml]$xml = Get-Content $fragmentFile -Raw
-            
-            $setBody = $xml.DocumentElement.SelectSingleNode('set-body')
-            $htmlContent = $setBody.'#cdata-section'
-            
-            $htmlContent | Should -Not -Match '\beval\s*\(' -Because "eval() is dangerous"
-            $htmlContent | Should -Not -Match '\bnew\s+Function\s*\(' -Because "Function constructor is dangerous"
+
+        It "page-template.xml should not have inline event handlers" {
+            $script:templateHtml | Should -Not -Match '\son\w+\s*=' -Because "Inline event handlers are XSS risks"
+        }
+
+        It "page-template.xml should not use eval() or Function()" {
+            $script:templateHtml | Should -Not -Match '\beval\s*\(' -Because "eval() is dangerous"
+            $script:templateHtml | Should -Not -Match '\bnew\s+Function\s*\(' -Because "Function constructor is dangerous"
         }
     }
 }

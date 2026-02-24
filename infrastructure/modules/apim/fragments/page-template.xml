@@ -1,0 +1,758 @@
+<fragment>
+  <return-response>
+    <set-status code="200" reason="OK" />
+    <set-header name="Content-Type" exists-action="override">
+      <value>text/html; charset=utf-8</value>
+    </set-header>
+    <set-header name="Cache-Control" exists-action="override">
+      <value>public, max-age=300</value>
+    </set-header>
+    <set-body><![CDATA[<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TXT TV Page - Retro text-based television interface">
+  <meta name="page-number" content="@(context.Variables.GetValueOrDefault<string>("pageNumber", "100"))">
+  <title>TXT TV - Loading...</title>
+  <style>/* TxtTV Retro Stylesheet
+ * Target: Local browser development with APIM policy conversion
+ * Size: <5 KB optimized for inline policy fragments
+ * Version: 1.0.0
+ */
+
+/* === Base Layout === */
+body {
+  margin: 0;
+  padding: 20px;
+  background-color: #000;
+  color: #0f0;
+  font-family: 'Courier New', 'Lucida Console', monospace;
+  font-size: 16px;
+  line-height: 1.4;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === Page Container === */
+.txttv-page {
+  max-width: 800px;
+  margin: 0 auto;
+  flex: 1;
+}
+
+/* === Content Display === */
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #0f0;
+}
+
+/* === Navigation === */
+.nav-links {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #0f0;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  color: #0ff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+.nav-links a:active {
+  color: #f0f;
+}
+
+/* === Index/Landing Page === */
+.page-selector {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.page-selector h1 {
+  color: #0ff;
+  margin-bottom: 30px;
+  font-size: 2em;
+  text-transform: uppercase;
+}
+
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 15px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.page-link {
+  background-color: #111;
+  border: 2px solid #0f0;
+  color: #0ff;
+  padding: 20px;
+  text-decoration: none;
+  display: block;
+  font-size: 1.2em;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.page-link:hover {
+  background-color: #0f0;
+  color: #000;
+  transform: scale(1.05);
+}
+
+/* === Keyboard Shortcuts Help === */
+.keyboard-help {
+  margin-top: 30px;
+  padding: 15px;
+  border: 1px solid #0f0;
+  font-size: 0.9em;
+  color: #0ff;
+}
+
+.keyboard-help h3 {
+  margin-top: 0;
+  color: #fff;
+}
+
+.keyboard-help kbd {
+  background-color: #222;
+  border: 1px solid #0f0;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-family: inherit;
+  color: #0ff;
+}
+
+/* === Status Indicators === */
+.status-bar {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #111;
+  border: 1px solid #0f0;
+  font-size: 0.85em;
+  color: #0f0;
+}
+
+.status-bar .page-number {
+  color: #0ff;
+  font-weight: bold;
+}
+
+/* === Accessibility === */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* === Responsive Design === */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .page-grid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+  }
+  
+  .page-link {
+    padding: 15px 10px;
+    font-size: 1em;
+  }
+  
+  .nav-links {
+    gap: 10px;
+  }
+}
+
+/* === Print Styles === */
+@media print {
+  body {
+    background-color: #fff;
+    color: #000;
+  }
+  
+  .nav-links,
+  .keyboard-help,
+  .status-bar {
+    display: none;
+  }
+  
+  pre {
+    color: #000;
+  }
+}
+</style>
+</head>
+<body>
+  <!-- Main Content Area -->
+  <div class="txttv-page">
+    <!-- Page Content (dynamically loaded from Content API via fetch) -->
+    <pre id="page-content">Loading page content...</pre>
+    
+    <!-- Related Pages -->
+    <div id="related-pages" class="nav-links" style="display:none;"></div>
+    
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <a id="nav-prev" href="#" title="Previous page (← or P)">← Previous</a>
+      <a href="?page=100" title="Home/Index (H)">Index</a>
+      <a id="nav-next" href="#" title="Next page (→ or N)">Next →</a>
+    </div>
+    
+    <!-- Keyboard Shortcuts Help -->
+    <div class="keyboard-help">
+      <h3>Keyboard Shortcuts</h3>
+      <p>
+        <kbd>←</kbd> or <kbd>P</kbd> Previous page &nbsp;|&nbsp;
+        <kbd>→</kbd> or <kbd>N</kbd> Next page &nbsp;|&nbsp;
+        <kbd>H</kbd> Home &nbsp;|&nbsp;
+        <kbd>F</kbd> First page &nbsp;|&nbsp;
+        <kbd>L</kbd> Last page
+      </p>
+    </div>
+    
+    <!-- Status Bar -->
+    <div class="status-bar">
+      Page <span class="page-number">---</span> of 11 (100-110)
+    </div>
+  </div>
+  
+  <!-- Load htmx from CDN (Constitution v1.2.2) -->
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" 
+          integrity="sha384-hKr8TsKESq9aihHvouWyL8K+fN9rkKltzl+nTVQY7qfPiHhzKkOHSGzlrNnXZVdM"
+          crossorigin="anonymous"></script>
+  
+  <!-- Content Renderer (fetch-based JSON loading) -->
+  <script>/**
+ * TXT TV Content Renderer
+ * 
+ * Fetches structured JSON content from the Content API and renders
+ * it into the TXT TV page layout with category headers, severity
+ * badges, content blocks, metadata, and navigation links.
+ * 
+ * Uses standard fetch() API per research.md Topic 4 decision.
+ * 
+ * Feature: 005-json-content-api (FR-006, FR-012, FR-015)
+ */
+(function () {
+    'use strict';
+
+    // ========================================================================
+    // Configuration
+    // ========================================================================
+    var CONFIG = {
+        contentEndpoint: '/content/',
+        contentElementId: 'page-content',
+        navPrevId: 'nav-prev',
+        navNextId: 'nav-next',
+        relatedContainerId: 'related-pages',
+        metadataContainerId: 'page-metadata',
+        categoryBadgeId: 'category-badge',
+        severityBadgeId: 'severity-badge',
+        defaultPage: 100,
+        lineWidth: 45
+    };
+
+    // Severity color mapping for TXT TV style
+    var SEVERITY_COLORS = {
+        'CRITICAL': '#ff0000',
+        'HIGH': '#ff8c00',
+        'MEDIUM': '#ffcc00',
+        'LOW': '#00ccff',
+        'INFO': '#00ff00'
+    };
+
+    // ========================================================================
+    // Page Number Extraction
+    // ========================================================================
+
+    /**
+     * Extract page number from URL.
+     * Supports: ?page=N (query param) and /page/N or /content/N (path)
+     */
+    function getPageNumber() {
+        // Try query parameter first (?page=N)
+        var params = new URLSearchParams(window.location.search);
+        var page = params.get('page');
+        if (page && /^\d{3}$/.test(page)) {
+            return page;
+        }
+
+        // Try path extraction (/page/N or /content/N)
+        var pathMatch = window.location.pathname.match(/\/(?:page|content)\/(\d{3})$/);
+        if (pathMatch) {
+            return pathMatch[1];
+        }
+
+        // Try data attribute on page-content element
+        var el = document.getElementById(CONFIG.contentElementId);
+        if (el && el.dataset.pageNumber && /^\d{3}$/.test(el.dataset.pageNumber)) {
+            return el.dataset.pageNumber;
+        }
+
+        // Try meta tag
+        var meta = document.querySelector('meta[name="page-number"]');
+        if (meta && meta.content && /^\d{3}$/.test(meta.content)) {
+            return meta.content;
+        }
+
+        return String(CONFIG.defaultPage);
+    }
+
+    // ========================================================================
+    // Content Rendering
+    // ========================================================================
+
+    /**
+     * Build the category and severity header line
+     */
+    function renderHeader(data) {
+        var parts = [];
+
+        if (data.category) {
+            parts.push(data.category);
+        }
+        if (data.severity) {
+            parts.push('[' + data.severity + ']');
+        }
+
+        var header = parts.join(' ');
+        var titleLine = data.title || 'Untitled';
+
+        return header + '\n' +
+            '═'.repeat(CONFIG.lineWidth) + '\n' +
+            titleLine + '\n' +
+            '─'.repeat(CONFIG.lineWidth);
+    }
+
+    /**
+     * Build the metadata footer
+     */
+    function renderMetadata(data) {
+        var lines = [];
+        lines.push('─'.repeat(CONFIG.lineWidth));
+
+        if (data.metadata) {
+            var metaParts = [];
+            if (data.severity) {
+                metaParts.push('Severity: ' + data.severity);
+            }
+            if (data.metadata.cvss !== undefined && data.metadata.cvss !== null) {
+                metaParts.push('CVSS: ' + data.metadata.cvss);
+            }
+            if (metaParts.length > 0) {
+                lines.push(metaParts.join(' | '));
+            }
+            if (data.metadata.published) {
+                lines.push('Published: ' + data.metadata.published);
+            }
+        }
+
+        lines.push('─'.repeat(CONFIG.lineWidth));
+        lines.push('Page ' + data.pageNumber);
+        return lines.join('\n');
+    }
+
+    /**
+     * Render the full page content into the DOM
+     */
+    function renderContent(data) {
+        var contentEl = document.getElementById(CONFIG.contentElementId);
+        if (!contentEl) {
+            console.error('[TxtTV] Content element not found: #' + CONFIG.contentElementId);
+            return;
+        }
+
+        // Build TXT TV formatted content
+        var rendered = [
+            renderHeader(data),
+            '',
+            data.content || '',
+            '',
+            renderMetadata(data)
+        ].join('\n');
+
+        contentEl.textContent = rendered;
+
+        // Update page title
+        document.title = 'TXT TV - Page ' + data.pageNumber;
+
+        // Update severity badge color if element exists
+        var severityEl = document.getElementById(CONFIG.severityBadgeId);
+        if (severityEl && data.severity && SEVERITY_COLORS[data.severity]) {
+            severityEl.style.color = SEVERITY_COLORS[data.severity];
+            severityEl.textContent = data.severity;
+        }
+
+        // Update navigation links
+        updateNavigation(data.navigation, data.pageNumber);
+    }
+
+    /**
+     * Update navigation links (prev/next/related)
+     */
+    function updateNavigation(nav, currentPage) {
+        if (!nav) return;
+
+        // Update prev link
+        var prevEl = document.getElementById(CONFIG.navPrevId);
+        if (prevEl) {
+            if (nav.prev !== null && nav.prev !== undefined) {
+                prevEl.href = '?page=' + nav.prev;
+                prevEl.textContent = '◄ Page ' + nav.prev;
+                prevEl.style.visibility = 'visible';
+            } else {
+                prevEl.style.visibility = 'hidden';
+            }
+        }
+
+        // Update next link
+        var nextEl = document.getElementById(CONFIG.navNextId);
+        if (nextEl) {
+            if (nav.next !== null && nav.next !== undefined) {
+                nextEl.href = '?page=' + nav.next;
+                nextEl.textContent = 'Page ' + nav.next + ' ►';
+                nextEl.style.visibility = 'visible';
+            } else {
+                nextEl.style.visibility = 'hidden';
+            }
+        }
+
+        // Update related pages
+        var relatedEl = document.getElementById(CONFIG.relatedContainerId);
+        if (relatedEl && nav.related && nav.related.length > 0) {
+            relatedEl.innerHTML = '';
+            var label = document.createTextNode('Related: ');
+            relatedEl.appendChild(label);
+
+            nav.related.forEach(function (pageNum, i) {
+                if (i > 0) {
+                    relatedEl.appendChild(document.createTextNode(' | '));
+                }
+                var link = document.createElement('a');
+                link.href = '?page=' + pageNum;
+                link.textContent = 'Page ' + pageNum;
+                link.className = 'related-link';
+                relatedEl.appendChild(link);
+            });
+            relatedEl.style.display = 'block';
+        } else if (relatedEl) {
+            relatedEl.style.display = 'none';
+        }
+    }
+
+    // ========================================================================
+    // Error Display (FR-015)
+    // ========================================================================
+
+    /**
+     * Display error in TXT TV style
+     */
+    function renderError(pageNumber, statusCode, message) {
+        var contentEl = document.getElementById(CONFIG.contentElementId);
+        if (!contentEl) return;
+
+        var errorText = [
+            'ERROR',
+            '═'.repeat(CONFIG.lineWidth),
+            '',
+            message || 'An error occurred loading the page.',
+            '',
+            '─'.repeat(CONFIG.lineWidth),
+            'Requested: Page ' + pageNumber,
+            'Status: ' + (statusCode || 'Unknown'),
+            '─'.repeat(CONFIG.lineWidth),
+            '',
+            'Press H for help, or navigate to another page.'
+        ].join('\n');
+
+        contentEl.textContent = errorText;
+        document.title = 'TXT TV - Error';
+    }
+
+    // ========================================================================
+    // Content Fetch
+    // ========================================================================
+
+    /**
+     * Fetch and render content for a given page number
+     */
+    async function loadAndRenderContent(pageNumber) {
+        var contentEl = document.getElementById(CONFIG.contentElementId);
+        if (contentEl) {
+            contentEl.textContent = 'Loading page ' + pageNumber + '...';
+        }
+
+        try {
+            var response = await fetch(CONFIG.contentEndpoint + pageNumber);
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    renderError(pageNumber, 404, 'Page ' + pageNumber + ' not found.\nThis page does not exist in the TXT TV system.');
+                } else if (response.status === 400) {
+                    renderError(pageNumber, 400, 'Invalid page number: ' + pageNumber + '\nPage numbers must be 3-digit integers (100-999).');
+                } else {
+                    renderError(pageNumber, response.status, 'Server error (' + response.status + ').\nPlease try again later.');
+                }
+                return;
+            }
+
+            var data = await response.json();
+
+            // Basic validation of response structure
+            if (!data || !data.pageNumber || !data.content) {
+                renderError(pageNumber, null, 'Invalid content format received.\nThe server returned malformed data.');
+                console.error('[TxtTV] Invalid JSON structure:', data);
+                return;
+            }
+
+            renderContent(data);
+
+        } catch (err) {
+            renderError(pageNumber, null, 'Network error loading content.\nCheck your connection and try again.');
+            console.error('[TxtTV] Content load failed:', err);
+        }
+    }
+
+    // ========================================================================
+    // Initialization
+    // ========================================================================
+
+    function init() {
+        var pageNumber = getPageNumber();
+        console.log('[TxtTV] Loading content for page', pageNumber);
+        loadAndRenderContent(pageNumber);
+    }
+
+    // Wait for DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    // Expose public API for navigation.js integration
+    window.TxtTvContentRenderer = {
+        loadPage: loadAndRenderContent,
+        getPageNumber: getPageNumber
+    };
+})();
+</script>
+  
+  <!-- Navigation Script -->
+  <script>/**
+ * TxtTV Navigation Script
+ * Provides keyboard shortcuts and page navigation for local development
+ * Target: Browser environment with modern ES6+ support
+ * Version: 1.0.0
+ */
+
+(function() {
+  'use strict';
+
+  // === Configuration ===
+  const CONFIG = {
+    minPage: 100,
+    maxPage: 110,
+    defaultPage: 100,
+    keybindings: {
+      previous: ['ArrowLeft', 'p', 'P'],
+      next: ['ArrowRight', 'n', 'N'],
+      home: ['h', 'H', 'Home'],
+      first: ['f', 'F'],
+      last: ['l', 'L']
+    }
+  };
+
+  // === Utility Functions ===
+  
+  /**
+   * Get current page number from URL query string
+   * @returns {number} Page number (100-110)
+   */
+  function getCurrentPage() {
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get('page'), 10);
+    
+    if (isNaN(page) || page < CONFIG.minPage || page > CONFIG.maxPage) {
+      return CONFIG.defaultPage;
+    }
+    
+    return page;
+  }
+
+  /**
+   * Navigate to a specific page
+   * @param {number} pageNumber - Target page number
+   */
+  function navigateToPage(pageNumber) {
+    if (pageNumber < CONFIG.minPage || pageNumber > CONFIG.maxPage) {
+      console.warn(`Page ${pageNumber} out of range [${CONFIG.minPage}-${CONFIG.maxPage}]`);
+      return;
+    }
+    
+    window.location.href = `?page=${pageNumber}`;
+  }
+
+  /**
+   * Calculate previous page with wrapping
+   * @param {number} currentPage - Current page number
+   * @returns {number} Previous page number
+   */
+  function getPreviousPage(currentPage) {
+    return currentPage === CONFIG.minPage ? CONFIG.maxPage : currentPage - 1;
+  }
+
+  /**
+   * Calculate next page with wrapping
+   * @param {number} currentPage - Current page number
+   * @returns {number} Next page number
+   */
+  function getNextPage(currentPage) {
+    return currentPage === CONFIG.maxPage ? CONFIG.minPage : currentPage + 1;
+  }
+
+  // === Keyboard Navigation ===
+  
+  /**
+   * Handle keyboard events for navigation
+   * @param {KeyboardEvent} event - Keyboard event object
+   */
+  function handleKeyPress(event) {
+    // Ignore key presses when typing in input fields
+    if (event.target.tagName === 'INPUT' || 
+        event.target.tagName === 'TEXTAREA' ||
+        event.target.isContentEditable) {
+      return;
+    }
+
+    const currentPage = getCurrentPage();
+    let targetPage = null;
+
+    // Check which key was pressed
+    if (CONFIG.keybindings.previous.includes(event.key)) {
+      targetPage = getPreviousPage(currentPage);
+    } else if (CONFIG.keybindings.next.includes(event.key)) {
+      targetPage = getNextPage(currentPage);
+    } else if (CONFIG.keybindings.home.includes(event.key)) {
+      targetPage = CONFIG.defaultPage;
+    } else if (CONFIG.keybindings.first.includes(event.key)) {
+      targetPage = CONFIG.minPage;
+    } else if (CONFIG.keybindings.last.includes(event.key)) {
+      targetPage = CONFIG.maxPage;
+    }
+
+    if (targetPage !== null) {
+      event.preventDefault();
+      navigateToPage(targetPage);
+    }
+  }
+
+  // === Performance Monitoring ===
+  
+  /**
+   * Log page load performance metrics (development only)
+   */
+  function logPerformanceMetrics() {
+    if (!window.performance || !window.performance.timing) {
+      return;
+    }
+
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const timing = performance.timing;
+        const loadTime = timing.loadEventEnd - timing.navigationStart;
+        const domReady = timing.domContentLoadedEventEnd - timing.navigationStart;
+        
+        console.log('[TxtTV] Performance Metrics:');
+        console.log(`  Page Load: ${loadTime}ms`);
+        console.log(`  DOM Ready: ${domReady}ms`);
+        console.log(`  Current Page: ${getCurrentPage()}`);
+      }, 0);
+    });
+  }
+
+  // === Status Bar (if present) ===
+  
+  /**
+   * Update status bar with current page info
+   */
+  function updateStatusBar() {
+    const statusBar = document.querySelector('.status-bar');
+    if (!statusBar) return;
+
+    const currentPage = getCurrentPage();
+    const pageNumberSpan = statusBar.querySelector('.page-number');
+    
+    if (pageNumberSpan) {
+      pageNumberSpan.textContent = currentPage;
+    }
+  }
+
+  // === Initialization ===
+  
+  /**
+   * Initialize navigation system
+   */
+  function init() {
+    // Set up keyboard navigation
+    document.addEventListener('keydown', handleKeyPress);
+    
+    // Update status bar if present
+    updateStatusBar();
+    
+    // Enable performance logging in development
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      logPerformanceMetrics();
+    }
+
+    // Log initialization
+    console.log('[TxtTV] Navigation initialized', {
+      currentPage: getCurrentPage(),
+      pageRange: `${CONFIG.minPage}-${CONFIG.maxPage}`,
+      keybindings: CONFIG.keybindings
+    });
+  }
+
+  // Run initialization when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // === Public API (for debugging) ===
+  window.TxtTvNavigation = {
+    getCurrentPage,
+    navigateToPage,
+    getPreviousPage,
+    getNextPage,
+    version: '1.0.0'
+  };
+
+})();
+</script>
+</body>
+</html>
+]]></set-body>
+  </return-response>
+</fragment>

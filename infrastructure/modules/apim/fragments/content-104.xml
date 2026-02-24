@@ -1,0 +1,26 @@
+<fragment>
+    <return-response>
+        <set-status code="200" reason="OK" />
+        <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+        </set-header>
+        <set-header name="Cache-Control" exists-action="override">
+            <value>public, max-age=3600</value>
+        </set-header>
+        <set-body><![CDATA[{
+  "pageNumber": 104,
+  "title": "International News Roundup",
+  "category": "NEWS",
+  "severity": null,
+  "content": "INTERNATIONAL NEWS\n═════════════════════════════════════════════════\n\nEurope\n──────\nEU summit discusses climate policy\nand economic recovery measures.\n\nAsia\n────\nTrade agreements strengthened between\nmajor Asian economies.\n\nAmericas\n────────\nInfrastructure investments announced\nacross North and South America.\n\nAfrica\n──────\nTechnology hubs growing rapidly in\nmajor African cities.",
+  "metadata": {
+    "published": "2026-02-09T16:00:00Z"
+  },
+  "navigation": {
+    "prev": 103,
+    "next": 105,
+    "related": [108]
+  }
+}]]></set-body>
+    </return-response>
+</fragment>

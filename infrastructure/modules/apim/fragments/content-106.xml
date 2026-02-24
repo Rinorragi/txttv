@@ -1,0 +1,26 @@
+<fragment>
+    <return-response>
+        <set-status code="200" reason="OK" />
+        <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+        </set-header>
+        <set-header name="Cache-Control" exists-action="override">
+            <value>public, max-age=3600</value>
+        </set-header>
+        <set-body><![CDATA[{
+  "pageNumber": 106,
+  "title": "Science & Nature Discoveries",
+  "category": "NEWS",
+  "severity": null,
+  "content": "SCIENCE & NATURE\n═════════════════════════════════════════════════\n\nSpace Exploration\n─────────────────\nMars rover discovers new geological\nformations suggesting ancient water.\n\nClimate\n───────\nOcean temperatures continue to be\nmonitored by research vessels.\n\nWildlife\n────────\nConservation efforts show positive\nresults for endangered species.\n\nResearch\n────────\nNew breakthrough in renewable energy\nstorage announced by scientists.",
+  "metadata": {
+    "published": "2026-02-09T16:00:00Z"
+  },
+  "navigation": {
+    "prev": 105,
+    "next": 107,
+    "related": [105]
+  }
+}]]></set-body>
+    </return-response>
+</fragment>

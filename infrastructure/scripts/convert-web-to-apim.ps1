@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-    Converts local web interface files to APIM policy fragments
+    Converts local web interface files to a single APIM page-template policy fragment
 
 .DESCRIPTION
-    Transforms HTML/CSS/JS source files from src/web/ into APIM policy fragments
-    that can be deployed to Azure API Management. Each fragment contains a complete
-    HTML page embedded in a CDATA section within a <set-body> policy element.
+    Transforms HTML/CSS/JS source files from src/web/ into a single APIM policy fragment
+    (page-template.xml) that serves as the shared HTML shell for all TXT TV pages.
+    Content is loaded dynamically via fetch() from the Content API at runtime.
     
     The script performs 4-layer validation:
     - Layer 1: XML well-formedness
@@ -18,12 +18,6 @@
 
 .PARAMETER OutputPath
     Output directory for generated policy fragments. Defaults to infrastructure/modules/apim/fragments
-
-.PARAMETER ContentPath
-    Directory containing text TV page content files. Defaults to content/pages
-
-.PARAMETER Pages
-    Array of page numbers to convert (e.g., 100,101,105). Defaults to 100..110
 
 .PARAMETER Validate
     Enable 4-layer validation after generation. Enabled by default.
@@ -39,11 +33,7 @@
 
 .EXAMPLE
     .\convert-web-to-apim.ps1
-    # Convert all pages (100-110) with validation
-
-.EXAMPLE
-    .\convert-web-to-apim.ps1 -Pages 100,101,102
-    # Convert specific pages only
+    # Generate page-template.xml with validation
 
 .EXAMPLE
     .\convert-web-to-apim.ps1 -WhatIf
@@ -52,11 +42,10 @@
 .NOTES
     Author: TxtTV Development Team
     Constitution: v1.2.2 compliant
-    Last Updated: 2026-02-09
+    Feature: 005-json-content-api
     
     Exit Codes:
     0 = Success
-    1 = Partial failure
     2 = Input error
     3 = Output error
     4 = Validation error
@@ -71,12 +60,6 @@ param(
     [string]$OutputPath = "infrastructure/modules/apim/fragments",
     
     [Parameter()]
-    [string]$ContentPath = "content/pages",
-    
-    [Parameter()]
-    [int[]]$Pages = (100..110),
-    
-    [Parameter()]
     [bool]$Validate = $true,
     
     [Parameter()]
@@ -84,8 +67,6 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$script:failedPages = @()
-$script:successPages = @()
 
 # Get repository root (2 levels up from scripts/)
 $repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -93,7 +74,6 @@ $repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 # Resolve paths relative to repo root
 $SourcePath = Join-Path $repoRoot $SourcePath
 $OutputPath = Join-Path $repoRoot $OutputPath
-$ContentPath = Join-Path $repoRoot $ContentPath
 
 # ============================================================================
 # Utility Functions
@@ -149,9 +129,16 @@ function Test-InputFiles {
         $errors += "Stylesheet not found: $cssPath"
     }
     
-    # Check content directory
-    if (-not (Test-Path $ContentPath)) {
-        $errors += "Content directory not found: $ContentPath"
+    # Check content-renderer.js
+    $rendererPath = Join-Path $SourcePath "scripts/content-renderer.js"
+    if (-not (Test-Path $rendererPath)) {
+        $errors += "Content renderer not found: $rendererPath"
+    }
+    
+    # Check navigation.js
+    $navPath = Join-Path $SourcePath "scripts/navigation.js"
+    if (-not (Test-Path $navPath)) {
+        $errors += "Navigation script not found: $navPath"
     }
     
     if ($errors.Count -gt 0) {
@@ -213,75 +200,41 @@ function Read-StylesheetContent {
 function Read-ScriptContent {
     <#
     .SYNOPSIS
-        Reads JavaScript files and combines them
+        Reads the navigation.js script
     #>
     param()
     
-    $scriptsPath = Join-Path $SourcePath "scripts"
-    $combinedScript = ""
-    
-    if (Test-Path $scriptsPath) {
-        $jsFiles = Get-ChildItem -Path $scriptsPath -Filter "*.js" -File
-        
-        foreach ($file in $jsFiles) {
-            try {
-                $content = Get-Content -Path $file.FullName -Raw -Encoding UTF8
-                $combinedScript += "`n// === $($file.Name) ===`n"
-                $combinedScript += $content
-                
-                $sizeKB = [Math]::Round($content.Length / 1KB, 1)
-                Write-Verbose "JS loaded: $($file.Name) ($sizeKB KB)"
-            }
-            catch {
-                Write-StatusMessage "Warning: Failed to read $($file.Name): $_" -Type Warning
-            }
-        }
-    }
-    
-    if ($combinedScript.Length -gt 10KB) {
-        $sizeKB = [Math]::Round($combinedScript.Length / 1KB, 1)
-        Write-StatusMessage "Warning: Combined JS is large (${sizeKB} KB). Consider optimization." -Type Warning
-    }
-    
-    return $combinedScript
-}
-
-function Read-ContentFile {
-    <#
-    .SYNOPSIS
-        Reads content for a specific page
-    #>
-    param(
-        [int]$PageNumber
-    )
-    
-    $contentFile = Join-Path $ContentPath "page-$PageNumber.txt"
-    
-    if (-not (Test-Path $contentFile)) {
-        Write-StatusMessage "Content file not found: $contentFile" -Type Warning
-        return @"
-═══════════════════════════════════════
-         TXT TV - PAGE $PageNumber
-═══════════════════════════════════════
-
-[Content not available]
-
-═══════════════════════════════════════
-"@
-    }
+    $navPath = Join-Path $SourcePath "scripts/navigation.js"
     
     try {
-        $content = Get-Content -Path $contentFile -Raw -Encoding UTF8
-        
-        if ($content.Length -gt 2000) {
-            Write-StatusMessage "Warning: Page $PageNumber content exceeds 2000 characters ($($content.Length) chars)" -Type Warning
-        }
-        
-        Write-Verbose "Content loaded: page-$PageNumber.txt ($($content.Length) chars)"
+        $content = Get-Content -Path $navPath -Raw -Encoding UTF8
+        $sizeKB = [Math]::Round($content.Length / 1KB, 1)
+        Write-Verbose "JS loaded: navigation.js ($sizeKB KB)"
         return $content
     }
     catch {
-        Write-StatusMessage "Failed to read content for page ${PageNumber}: $_" -Type Error
+        Write-StatusMessage "Failed to read navigation.js: $_" -Type Error
+        throw
+    }
+}
+
+function Read-ContentRendererScript {
+    <#
+    .SYNOPSIS
+        Reads the content-renderer.js script
+    #>
+    param()
+    
+    $rendererPath = Join-Path $SourcePath "scripts/content-renderer.js"
+    
+    try {
+        $content = Get-Content -Path $rendererPath -Raw -Encoding UTF8
+        $sizeKB = [Math]::Round($content.Length / 1KB, 1)
+        Write-Verbose "JS loaded: content-renderer.js ($sizeKB KB)"
+        return $content
+    }
+    catch {
+        Write-StatusMessage "Failed to read content-renderer.js: $_" -Type Error
         throw
     }
 }
@@ -293,33 +246,21 @@ function Invoke-PlaceholderReplacement {
     #>
     param(
         [string]$Template,
-        [int]$PageNumber,
-        [string]$Content,
         [string]$Style,
-        [string]$Script
+        [string]$ContentRendererScript,
+        [string]$NavigationScript
     )
     
     $html = $Template
     
-    # Replace PAGE_NUMBER
-    $html = $html -replace '\{PAGE_NUMBER\}', $PageNumber
-    
-    # Replace CONTENT
-    $html = $html -replace '\{CONTENT\}', $Content
-    
     # Replace STYLE
     $html = $html -replace '\{STYLE\}', $Style
     
-    # Replace SCRIPT
-    $html = $html -replace '\{SCRIPT\}', $Script
+    # Replace CONTENT_RENDERER_SCRIPT
+    $html = $html -replace '\{CONTENT_RENDERER_SCRIPT\}', $ContentRendererScript
     
-    # Calculate prev/next pages with wrapping
-    $prevPage = if ($PageNumber -eq 100) { 110 } else { $PageNumber - 1 }
-    $nextPage = if ($PageNumber -eq 110) { 100 } else { $PageNumber + 1 }
-    
-    # Replace navigation placeholders if present
-    $html = $html -replace '\{PREV_PAGE\}', $prevPage
-    $html = $html -replace '\{NEXT_PAGE\}', $nextPage
+    # Replace SCRIPT (navigation)
+    $html = $html -replace '\{SCRIPT\}', $NavigationScript
     
     return $html
 }
@@ -368,20 +309,20 @@ function New-PolicyFragmentXml {
 function Save-FragmentFile {
     <#
     .SYNOPSIS
-        Saves XML fragment to output file with UTF-8 BOM encoding
+        Saves XML fragment to output file with UTF-8 no-BOM encoding
     #>
     param(
         [string]$XmlContent,
-        [int]$PageNumber
+        [string]$FileName = "page-template.xml"
     )
     
-    $outputFile = Join-Path $OutputPath "page-$PageNumber.xml"
+    $outputFile = Join-Path $OutputPath $FileName
     
     # Check if file exists and Force not specified
     if ((Test-Path $outputFile) -and -not $Force -and -not $WhatIfPreference) {
         $response = Read-Host "File exists: $outputFile. Overwrite? (y/N)"
         if ($response -ne 'y' -and $response -ne 'Y') {
-            Write-StatusMessage "Skipped page $PageNumber" -Type Warning
+            Write-StatusMessage "Skipped $FileName" -Type Warning
             return $false
         }
     }
@@ -394,12 +335,12 @@ function Save-FragmentFile {
         }
         
         if ($PSCmdlet.ShouldProcess($outputFile, "Write policy fragment")) {
-            # Write with UTF-8 BOM
-            $utf8Bom = New-Object System.Text.UTF8Encoding $true
-            [System.IO.File]::WriteAllText($outputFile, $XmlContent, $utf8Bom)
+            # Write with UTF-8 no-BOM
+            $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+            [System.IO.File]::WriteAllText($outputFile, $XmlContent, $utf8NoBom)
             
             $sizeKB = [Math]::Round((Get-Item $outputFile).Length / 1KB, 1)
-            Write-StatusMessage "Saved page-$PageNumber.xml ($sizeKB KB)" -Type Success
+            Write-StatusMessage "Saved $FileName ($sizeKB KB)" -Type Success
             
             if ($sizeKB -gt 256) {
                 Write-StatusMessage "Error: Fragment exceeds 256 KB limit!" -Type Error
@@ -414,7 +355,7 @@ function Save-FragmentFile {
         }
     }
     catch {
-        Write-StatusMessage "Failed to save page-$PageNumber.xml: $_" -Type Error
+        Write-StatusMessage "Failed to save ${FileName}: $_" -Type Error
         return $false
     }
 }
@@ -425,19 +366,18 @@ function Test-XmlWellFormedness {
         Layer 1 Validation: Check XML well-formedness
     #>
     param(
-        [string]$XmlContent,
-        [int]$PageNumber
+        [string]$XmlContent
     )
     
     try {
         $xmlDoc = New-Object System.Xml.XmlDocument
         $xmlDoc.LoadXml($XmlContent)
         
-        Write-Verbose "✓ Layer 1 (XML): Page $PageNumber is well-formed"
+        Write-Verbose "✓ Layer 1 (XML): page-template is well-formed"
         return $true
     }
     catch {
-        Write-StatusMessage "Layer 1 validation failed for page ${PageNumber}: $_" -Type Error
+        Write-StatusMessage "Layer 1 validation failed: $_" -Type Error
         return $false
     }
 }
@@ -448,8 +388,7 @@ function Test-ApimSchema {
         Layer 2 Validation: Check APIM schema compliance
     #>
     param(
-        [string]$XmlContent,
-        [int]$PageNumber
+        [string]$XmlContent
     )
     
     try {
@@ -476,11 +415,11 @@ function Test-ApimSchema {
             return $false
         }
         
-        Write-Verbose "✓ Layer 2 (Schema): Page $PageNumber conforms to APIM schema"
+        Write-Verbose "✓ Layer 2 (Schema): page-template conforms to APIM schema"
         return $true
     }
     catch {
-        Write-StatusMessage "Layer 2 validation failed for page ${PageNumber}: $_" -Type Error
+        Write-StatusMessage "Layer 2 validation failed: $_" -Type Error
         return $false
     }
 }
@@ -491,8 +430,7 @@ function Test-SecurityIssues {
         Layer 3 Validation: Check for security issues (XSS, injection)
     #>
     param(
-        [string]$XmlContent,
-        [int]$PageNumber
+        [string]$XmlContent
     )
     
     try {
@@ -525,18 +463,17 @@ function Test-SecurityIssues {
         }
         
         if ($issues.Count -gt 0) {
-            Write-StatusMessage "Layer 3 validation warnings for page ${PageNumber}:" -Type Warning
+            Write-StatusMessage "Layer 3 validation warnings:" -Type Warning
             foreach ($issue in $issues) {
                 Write-StatusMessage "  - $issue" -Type Warning
             }
-            # Warnings don't fail validation, but are logged
         }
         
-        Write-Verbose "✓ Layer 3 (Security): Page $PageNumber passed security checks"
+        Write-Verbose "✓ Layer 3 (Security): page-template passed security checks"
         return $true
     }
     catch {
-        Write-StatusMessage "Layer 3 validation failed for page ${PageNumber}: $_" -Type Error
+        Write-StatusMessage "Layer 3 validation failed: $_" -Type Error
         return $false
     }
 }
@@ -547,8 +484,7 @@ function Test-Integration {
         Layer 4 Validation: Integration testing
     #>
     param(
-        [string]$XmlContent,
-        [int]$PageNumber
+        [string]$XmlContent
     )
     
     try {
@@ -579,16 +515,22 @@ function Test-Integration {
             return $false
         }
         
-        # Check for page number in content
-        if ($htmlContent -notmatch $PageNumber) {
-            Write-StatusMessage "Layer 4 validation warning: Page number $PageNumber not found in content" -Type Warning
+        # Check for content-renderer integration (dynamic loading)
+        if ($htmlContent -notmatch 'TxtTvContentRenderer|loadAndRenderContent|content-renderer') {
+            Write-StatusMessage "Layer 4 validation warning: Content renderer not found in template" -Type Warning
         }
         
-        Write-Verbose "✓ Layer 4 (Integration): Page $PageNumber passed integration checks"
+        # Check for page-content element
+        if ($htmlContent -notmatch 'id="page-content"') {
+            Write-StatusMessage "Layer 4 validation failed: Missing #page-content element" -Type Error
+            return $false
+        }
+        
+        Write-Verbose "✓ Layer 4 (Integration): page-template passed integration checks"
         return $true
     }
     catch {
-        Write-StatusMessage "Layer 4 validation failed for page ${PageNumber}: $_" -Type Error
+        Write-StatusMessage "Layer 4 validation failed: $_" -Type Error
         return $false
     }
 }
@@ -599,8 +541,7 @@ function Invoke-ValidationLayers {
         Runs all 4 validation layers
     #>
     param(
-        [string]$XmlContent,
-        [int]$PageNumber
+        [string]$XmlContent
     )
     
     if (-not $Validate) {
@@ -609,22 +550,22 @@ function Invoke-ValidationLayers {
     }
     
     # Layer 1: XML well-formedness
-    if (-not (Test-XmlWellFormedness -XmlContent $XmlContent -PageNumber $PageNumber)) {
+    if (-not (Test-XmlWellFormedness -XmlContent $XmlContent)) {
         return $false
     }
     
     # Layer 2: APIM schema compliance
-    if (-not (Test-ApimSchema -XmlContent $XmlContent -PageNumber $PageNumber)) {
+    if (-not (Test-ApimSchema -XmlContent $XmlContent)) {
         return $false
     }
     
     # Layer 3: Security scanning
-    if (-not (Test-SecurityIssues -XmlContent $XmlContent -PageNumber $PageNumber)) {
+    if (-not (Test-SecurityIssues -XmlContent $XmlContent)) {
         return $false
     }
     
     # Layer 4: Integration testing
-    if (-not (Test-Integration -XmlContent $XmlContent -PageNumber $PageNumber)) {
+    if (-not (Test-Integration -XmlContent $XmlContent)) {
         return $false
     }
     
@@ -632,80 +573,18 @@ function Invoke-ValidationLayers {
 }
 
 # ============================================================================
-# Main Conversion Logic
-# ============================================================================
-
-function ConvertTo-ApimFragment {
-    <#
-    .SYNOPSIS
-        Main conversion function for a single page
-    #>
-    param(
-        [int]$PageNumber,
-        [string]$Template,
-        [string]$Style,
-        [string]$Script
-    )
-    
-    try {
-        Write-Host "`nConverting page $PageNumber..." -NoNewline
-        
-        # Read content
-        $content = Read-ContentFile -PageNumber $PageNumber
-        
-        # Replace placeholders
-        $html = Invoke-PlaceholderReplacement `
-            -Template $Template `
-            -PageNumber $PageNumber `
-            -Content $content `
-            -Style $Style `
-            -Script $Script
-        
-        # Wrap in policy fragment XML
-        $xml = New-PolicyFragmentXml -HtmlContent $html
-        
-        # Validate
-        if (-not (Invoke-ValidationLayers -XmlContent $xml -PageNumber $PageNumber)) {
-            Write-Host " FAILED" -ForegroundColor Red
-            $script:failedPages += $PageNumber
-            return $false
-        }
-        
-        # Save to file
-        if (Save-FragmentFile -XmlContent $xml -PageNumber $PageNumber) {
-            $sizeKB = [Math]::Round($xml.Length / 1KB, 1)
-            Write-Host " ✓ ($sizeKB KB)" -ForegroundColor Green
-            $script:successPages += $PageNumber
-            return $true
-        }
-        else {
-            Write-Host " FAILED" -ForegroundColor Red
-            $script:failedPages += $PageNumber
-            return $false
-        }
-    }
-    catch {
-        Write-Host " ERROR" -ForegroundColor Red
-        Write-StatusMessage "Error converting page ${PageNumber}: $_" -Type Error
-        $script:failedPages += $PageNumber
-        return $false
-    }
-}
-
-# ============================================================================
 # Main Script Execution
 # ============================================================================
 
 try {
-    Write-Host "`nTxtTV Web → APIM Policy Conversion Script" -ForegroundColor Cyan
+    Write-Host "`nTxtTV Web → APIM Page Template Conversion" -ForegroundColor Cyan
     Write-Host "=========================================" -ForegroundColor Cyan
     Write-Host ""
     
     Write-StatusMessage "Configuration:" -Type Info
     Write-Host "  Source Path:  $SourcePath"
     Write-Host "  Output Path:  $OutputPath"
-    Write-Host "  Content Path: $ContentPath"
-    Write-Host "  Pages:        $($Pages -join ', ')"
+    Write-Host "  Output File:  page-template.xml"
     Write-Host "  Validation:   $Validate"
     Write-Host ""
     
@@ -721,47 +600,44 @@ try {
     Write-StatusMessage "Loading source files..." -Type Info
     $template = Read-TemplateFile
     $style = Read-StylesheetContent
-    $script = Read-ScriptContent
+    $contentRendererScript = Read-ContentRendererScript
+    $navigationScript = Read-ScriptContent
     Write-StatusMessage "Source files loaded" -Type Success
     
-    # Convert each page
+    # Generate page template
     Write-Host ""
-    Write-StatusMessage "Converting pages..." -Type Info
+    Write-StatusMessage "Generating page-template.xml..." -Type Info
     
-    foreach ($page in $Pages) {
-        ConvertTo-ApimFragment `
-            -PageNumber $page `
-            -Template $template `
-            -Style $style `
-            -Script $script
+    # Replace placeholders
+    $html = Invoke-PlaceholderReplacement `
+        -Template $template `
+        -Style $style `
+        -ContentRendererScript $contentRendererScript `
+        -NavigationScript $navigationScript
+    
+    # Wrap in policy fragment XML
+    $xml = New-PolicyFragmentXml -HtmlContent $html
+    
+    # Validate
+    if (-not (Invoke-ValidationLayers -XmlContent $xml)) {
+        Write-StatusMessage "Validation failed!" -Type Error
+        exit 4
     }
+    Write-StatusMessage "All 4 validation layers passed" -Type Success
     
-    # Summary
+    # Save to file
     Write-Host ""
-    Write-Host "=========================================" -ForegroundColor Cyan
-    Write-StatusMessage "Conversion Summary:" -Type Info
-    Write-Host "  Total Pages:  $($Pages.Count)"
-    Write-Host "  Successful:   $($script:successPages.Count)" -ForegroundColor Green
-    Write-Host "  Failed:       $($script:failedPages.Count)" -ForegroundColor $(if ($script:failedPages.Count -eq 0) { 'Green' } else { 'Red' })
-    
-    if ($script:failedPages.Count -gt 0) {
-        Write-Host "  Failed Pages: $($script:failedPages -join ', ')" -ForegroundColor Red
-    }
-    
-    Write-Host ""
-    
-    # Determine exit code
-    if ($script:failedPages.Count -eq 0) {
+    if (Save-FragmentFile -XmlContent $xml -FileName "page-template.xml") {
+        $sizeKB = [Math]::Round($xml.Length / 1KB, 1)
+        Write-Host ""
+        Write-Host "=========================================" -ForegroundColor Cyan
         Write-StatusMessage "Conversion completed successfully! ✓" -Type Success
+        Write-Host "  Output: page-template.xml ($sizeKB KB)"
         exit 0
     }
-    elseif ($script:successPages.Count -gt 0) {
-        Write-StatusMessage "Conversion completed with partial failures" -Type Warning
-        exit 1
-    }
     else {
-        Write-StatusMessage "Conversion failed" -Type Error
-        exit 4
+        Write-StatusMessage "Failed to save page-template.xml" -Type Error
+        exit 3
     }
 }
 catch {

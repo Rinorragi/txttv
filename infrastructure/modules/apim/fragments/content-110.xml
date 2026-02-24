@@ -1,0 +1,26 @@
+<fragment>
+    <return-response>
+        <set-status code="200" reason="OK" />
+        <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+        </set-header>
+        <set-header name="Cache-Control" exists-action="override">
+            <value>public, max-age=3600</value>
+        </set-header>
+        <set-body><![CDATA[{
+  "pageNumber": 110,
+  "title": "Local News & Community Events",
+  "category": "NEWS",
+  "severity": null,
+  "content": "LOCAL NEWS\n═════════════════════════════════════════════════\n\nCommunity Events\n────────────────\nSummer festival announced for next\nweekend at the town square.\n\nTraffic & Transport\n───────────────────\nRoad works scheduled on main highway\nduring off-peak hours.\n\nLocal Politics\n──────────────\nCouncil meeting to discuss new\ndevelopment proposals.\n\nPublic Services\n───────────────\nLibrary extends opening hours for\nsummer reading program.\n\n─────────────────────────────────────────────────\nThank you for using TXT TV!\nReturn to home page: page 100\n─────────────────────────────────────────────────\nTXT TV - Your Community News Service",
+  "metadata": {
+    "published": "2026-02-09T16:00:00Z"
+  },
+  "navigation": {
+    "prev": 109,
+    "next": null,
+    "related": [100, 109]
+  }
+}]]></set-body>
+    </return-response>
+</fragment>

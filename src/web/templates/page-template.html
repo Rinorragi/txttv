@@ -3,21 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="TXT TV Page {PAGE_NUMBER} - Retro text-based television interface">
-  <title>TXT TV - Page {PAGE_NUMBER}</title>
+  <meta name="description" content="TXT TV Page - Retro text-based television interface">
+  <meta name="page-number" content="@(context.Variables.GetValueOrDefault<string>("pageNumber", "100"))">
+  <title>TXT TV - Loading...</title>
   <style>{STYLE}</style>
 </head>
 <body>
   <!-- Main Content Area -->
   <div class="txttv-page">
-    <!-- Page Content (from content/pages/page-{PAGE_NUMBER}.txt) -->
-    <pre id="page-content">{CONTENT}</pre>
+    <!-- Page Content (dynamically loaded from Content API via fetch) -->
+    <pre id="page-content">Loading page content...</pre>
+    
+    <!-- Related Pages -->
+    <div id="related-pages" class="nav-links" style="display:none;"></div>
     
     <!-- Navigation Links -->
     <div class="nav-links">
-      <a href="?page={PREV_PAGE}" title="Previous page (← or P)">← Previous</a>
+      <a id="nav-prev" href="#" title="Previous page (← or P)">← Previous</a>
       <a href="?page=100" title="Home/Index (H)">Index</a>
-      <a href="?page={NEXT_PAGE}" title="Next page (→ or N)">Next →</a>
+      <a id="nav-next" href="#" title="Next page (→ or N)">Next →</a>
     </div>
     
     <!-- Keyboard Shortcuts Help -->
@@ -34,7 +38,7 @@
     
     <!-- Status Bar -->
     <div class="status-bar">
-      Page <span class="page-number">{PAGE_NUMBER}</span> of 11 (100-110)
+      Page <span class="page-number">---</span> of 11 (100-110)
     </div>
   </div>
   
@@ -42,6 +46,9 @@
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" 
           integrity="sha384-hKr8TsKESq9aihHvouWyL8K+fN9rkKltzl+nTVQY7qfPiHhzKkOHSGzlrNnXZVdM"
           crossorigin="anonymous"></script>
+  
+  <!-- Content Renderer (fetch-based JSON loading) -->
+  <script>{CONTENT_RENDERER_SCRIPT}</script>
   
   <!-- Navigation Script -->
   <script>{SCRIPT}</script>

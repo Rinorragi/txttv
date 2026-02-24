@@ -1,0 +1,16 @@
+{
+  "pageNumber": 103,
+  "title": "Historical Case: 2017 Equifax Breach",
+  "category": "SECURITY ALERT",
+  "severity": "HIGH",
+  "content": "LESSONS FROM EQUIFAX: Struts CVE-2017-5638\n═════════════════════════════════════════════════\n\nINCIDENT OVERVIEW:\nMarch-July 2017: Attackers exploited unpatched\nApache Struts vulnerability (CVE-2017-5638) to\ncompromise Equifax systems.\n\nIMPACT SCALE:\n• 147 million consumers affected\n• Social Security numbers exposed\n• Birth dates, addresses compromised\n• Credit card data for 209,000 stolen\n• Settlement: $700 million\n\nATTACK TIMELINE:\nMarch 7: Apache releases Struts patch\nMarch 10: Equifax vulnerability notice\nMay 13: Initial breach (undetected)\nJuly 29: Breach discovered (76 days late)\nSept 7: Public disclosure\n\nROOT CAUSES:\n❌ Patch not applied for 2+ months\n❌ Vulnerability scanner missed the issue\n❌ SSL certificate expired (monitoring gap)\n❌ Segmentation failures\n❌ Inadequate logging\n\nKEY TAKEAWAYS:\n✓ Patch critical CVEs within 48 hours\n✓ Verify scanner coverage quarterly\n✓ Monitor certificate expiry\n✓ Implement defense in depth\n✓ Enable comprehensive audit logging",
+  "metadata": {
+    "cvss": 8.1,
+    "published": "2026-02-09T14:00:00Z"
+  },
+  "navigation": {
+    "prev": 102,
+    "next": 104,
+    "related": [100, 101, 102]
+  }
+}

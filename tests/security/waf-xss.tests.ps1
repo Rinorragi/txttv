@@ -1,5 +1,6 @@
 # WAF XSS Protection Tests
 # Tests WAF rules against cross-site scripting attack patterns
+# Updated for two-API architecture: Page API + Content API
 
 Describe "WAF XSS Protection" {
     BeforeAll {
@@ -9,7 +10,7 @@ Describe "WAF XSS Protection" {
         $script:skipTests = [string]::IsNullOrEmpty($appGatewayUrl)
     }
 
-    Context "XSS Attack Prevention" -Skip:$skipTests {
+    Context "XSS Attack Prevention on Page API" -Skip:$skipTests {
         $xssPatterns = @(
             @{ name = "Basic script tag"; payload = "<script>alert('xss')</script>" },
             @{ name = "Event handler"; payload = "<img src=x onerror=alert('xss')>" },
@@ -20,17 +21,40 @@ Describe "WAF XSS Protection" {
         )
 
         foreach ($attack in $xssPatterns) {
-            It "Should block <name> attack" -TestCases @(@{name = $attack.name; payload = $attack.payload}) {
+            It "Should block <name> attack on /page/" -TestCases @(@{name = $attack.name; payload = $attack.payload}) {
                 $encodedPayload = [System.Web.HttpUtility]::UrlEncode($payload)
                 $uri = "$appGatewayUrl/page/100?input=$encodedPayload"
                 
                 try {
                     $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -ErrorAction SilentlyContinue
-                    # If we get here, request was allowed - check it's not 200
                     $response.StatusCode | Should -BeIn @(403, 400) -Because "XSS attack should be blocked"
                 }
                 catch {
-                    # 403 Forbidden is expected for WAF blocks
+                    $_.Exception.Response.StatusCode.value__ | Should -BeIn @(403, 400)
+                }
+            }
+        }
+    }
+
+    Context "XSS Attack Prevention on Content API" -Skip:$skipTests {
+        $xssPatterns = @(
+            @{ name = "Basic script tag"; payload = "<script>alert('xss')</script>" },
+            @{ name = "Event handler"; payload = "<img src=x onerror=alert('xss')>" },
+            @{ name = "JavaScript protocol"; payload = "<a href='javascript:alert(1)'>click</a>" },
+            @{ name = "SVG onload"; payload = "<svg onload=alert('xss')>" },
+            @{ name = "Eval function"; payload = "eval(atob('YWxlcnQoMSk='))" }
+        )
+
+        foreach ($attack in $xssPatterns) {
+            It "Should block <name> attack on /content/" -TestCases @(@{name = $attack.name; payload = $attack.payload}) {
+                $encodedPayload = [System.Web.HttpUtility]::UrlEncode($payload)
+                $uri = "$appGatewayUrl/content/100?input=$encodedPayload"
+                
+                try {
+                    $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -ErrorAction SilentlyContinue
+                    $response.StatusCode | Should -BeIn @(403, 400) -Because "XSS attack should be blocked on Content API"
+                }
+                catch {
                     $_.Exception.Response.StatusCode.value__ | Should -BeIn @(403, 400)
                 }
             }
@@ -38,7 +62,7 @@ Describe "WAF XSS Protection" {
     }
 
     Context "Path-based XSS Prevention" -Skip:$skipTests {
-        It "Should block XSS in URL path" {
+        It "Should block XSS in page URL path" {
             $uri = "$appGatewayUrl/page/<script>alert(1)</script>"
             
             try {
@@ -48,6 +72,32 @@ Describe "WAF XSS Protection" {
             catch {
                 $_.Exception.Response.StatusCode.value__ | Should -BeIn @(403, 400)
             }
+        }
+
+        It "Should block XSS in content URL path" {
+            $uri = "$appGatewayUrl/content/<script>alert(1)</script>"
+            
+            try {
+                $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -ErrorAction SilentlyContinue
+                $response.StatusCode | Should -BeIn @(403, 400)
+            }
+            catch {
+                $_.Exception.Response.StatusCode.value__ | Should -BeIn @(403, 400)
+            }
+        }
+    }
+
+    Context "Legitimate Requests" -Skip:$skipTests {
+        It "Should allow normal page requests" {
+            $uri = "$appGatewayUrl/page/100"
+            $response = Invoke-WebRequest -Uri $uri -UseBasicParsing
+            $response.StatusCode | Should -Be 200
+        }
+
+        It "Should allow normal content requests" {
+            $uri = "$appGatewayUrl/content/100"
+            $response = Invoke-WebRequest -Uri $uri -UseBasicParsing
+            $response.StatusCode | Should -Be 200
         }
     }
 }

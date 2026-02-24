@@ -2,10 +2,11 @@
     Page Routing Policy for TXT TV
     
     This policy handles the GET /page/{pageNumber} operation.
-    It extracts the page number from the URL and renders the appropriate
-    policy fragment containing the page content.
+    It extracts the page number from the URL and serves the shared
+    page-template fragment. Content is loaded dynamically via fetch()
+    from the Content API (/content/{pageNumber}) at render time.
     
-    Implementation: APIM policy-based HTML rendering (not backend call)
+    Implementation: APIM policy-based HTML shell + client-side JSON loading
 -->
 <policies>
     <inbound>
@@ -37,68 +38,14 @@
             </when>
         </choose>
         
-        <!-- Calculate navigation page numbers -->
-        <set-variable name="currentPage" value="@(int.Parse((string)context.Variables["pageNumber"]))" />
-        <set-variable name="previousPage" value="@((int)context.Variables["currentPage"] - 1)" />
-        <set-variable name="nextPage" value="@((int)context.Variables["currentPage"] + 1)" />
-        
         <!-- Log page view -->
         <trace source="TxtTV-PageRouting" severity="information">
             <message>@($"Page view: {context.Variables["pageNumber"]}")</message>
             <metadata name="pageNumber" value="@((string)context.Variables["pageNumber"])" />
         </trace>
         
-            
-        <choose>
-            <when condition="@(context.Variables.GetValueOrDefault<string>("pageNumber") == "100")">
-                <include-fragment fragment-id="page-100" />
-            </when>
-            <when condition="@(context.Variables.GetValueOrDefault<string>("pageNumber") == "101")">
-                <include-fragment fragment-id="page-101" />
-            </when>
-            <when condition="@(context.Variables.GetValueOrDefault<string>("pageNumber") == "102")">
-                <include-fragment fragment-id="page-102" />
-            </when>
-            <when condition="@(context.Variables.GetValueOrDefault<string>("pageNumber") == "103")">
-                <include-fragment fragment-id="page-103" />
-            </when>
-            <when condition="@(context.Variables.GetValueOrDefault<string>("pageNumber") == "104")">
-                <include-fragment fragment-id="page-104" />
-            </when>
-            <when condition="@(context.Variables.GetValueOrDefault<string>("pageNumber") == "105")">
-                <include-fragment fragment-id="page-105" />
-            </when>
-            <when condition="@(context.Variables.GetValueOrDefault<string>("pageNumber") == "106")">
-                <include-fragment fragment-id="page-106" />
-            </when>
-            <when condition="@(context.Variables.GetValueOrDefault<string>("pageNumber") == "107")">
-                <include-fragment fragment-id="page-107" />
-            </when>
-            <when condition="@(context.Variables.GetValueOrDefault<string>("pageNumber") == "108")">
-                <include-fragment fragment-id="page-108" />
-            </when>
-            <when condition="@(context.Variables.GetValueOrDefault<string>("pageNumber") == "109")">
-                <include-fragment fragment-id="page-109" />
-            </when>
-            <when condition="@(context.Variables.GetValueOrDefault<string>("pageNumber") == "110")">
-                <include-fragment fragment-id="page-110" />
-            </when>
-            <otherwise>
-                <!-- Page not found - show error page -->
-                <include-fragment fragment-id="error-page" />
-            </otherwise>
-        </choose>
-
-        <!-- Return the rendered HTML response -->
-        <return-response>
-            <set-status code="200" reason="OK" />
-            <set-header name="Content-Type" exists-action="override">
-                <value>text/html; charset=utf-8</value>
-            </set-header>
-            <set-header name="Cache-Control" exists-action="override">
-                <value>public, max-age=300</value>
-            </set-header>
-        </return-response>
+        <!-- Serve shared page template (fragment includes return-response with body) -->
+        <include-fragment fragment-id="page-template" />
     </inbound>
     
     <backend>

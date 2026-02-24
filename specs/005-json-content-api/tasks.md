@@ -30,7 +30,7 @@
 
 **Purpose**: Create the structured JSON content files that are the single source of truth for all downstream tasks.
 
-- [ ] T001 Create JSON content files for pages 100-110 by converting existing .txt files to structured JSON format in content/pages/page-{100-110}.json
+- [X] T001 Create JSON content files for pages 100-110 by converting existing .txt files to structured JSON format in content/pages/page-{100-110}.json
 
 **Details for T001**: Convert each `content/pages/page-{N}.txt` to `content/pages/page-{N}.json` following the schema defined in `contracts/json-schema.md`. Each file must include `pageNumber`, `title`, `category`, `content`, `navigation` (with correct `prev`/`next` chain), and optionally `severity` and `metadata`. Content text should preserve the original `.txt` body using `\n` for line breaks. Page 100 has `prev: null`, page 110 has `next: null`.
 
@@ -58,11 +58,11 @@ No foundational phase tasks are required. The JSON content files created in Setu
 
 ### Implementation for User Story 1
 
-- [ ] T002 [P] [US1] Create conversion script with JSON schema validation and XML generation in infrastructure/scripts/convert-json-to-fragment.ps1
-- [ ] T003 [P] [US1] Create content routing policy with choose/when dispatch and 404 handling in infrastructure/modules/apim/policies/content-routing-policy.xml
-- [ ] T004 [P] [US1] Create Content API operation definition for GET /content/{pageNumber} in infrastructure/modules/apim/operations/get-content.json
-- [ ] T005 [US1] Generate content fragments for pages 100-110 by running convert-json-to-fragment.ps1 (output: infrastructure/modules/apim/fragments/content-{100-110}.xml)
-- [ ] T006 [US1] Register content fragments, content routing policy, and get-content operation in infrastructure/modules/apim/main.bicep
+- [X] T002 [P] [US1] Create conversion script with JSON schema validation and XML generation in infrastructure/scripts/convert-json-to-fragment.ps1
+- [X] T003 [P] [US1] Create content routing policy with choose/when dispatch and 404 handling in infrastructure/modules/apim/policies/content-routing-policy.xml
+- [X] T004 [P] [US1] Create Content API operation definition for GET /content/{pageNumber} in infrastructure/modules/apim/operations/get-content.json
+- [X] T005 [US1] Generate content fragments for pages 100-110 by running convert-json-to-fragment.ps1 (output: infrastructure/modules/apim/fragments/content-{100-110}.xml)
+- [X] T006 [US1] Register content fragments, content routing policy, and get-content operation in infrastructure/modules/apim/main.bicep
 
 ### Task Details — Phase 3
 
@@ -112,13 +112,13 @@ No foundational phase tasks are required. The JSON content files created in Setu
 
 ### Implementation for User Story 2
 
-- [ ] T007 [P] [US2] Create content-renderer.js with fetch-based JSON loading and TXT TV rendering in src/web/scripts/content-renderer.js
-- [ ] T008 [P] [US2] Update page-template.html with dynamic content loading placeholder and script references in src/web/templates/page-template.html
-- [ ] T009 [P] [US2] Update page.html for local development content loading in src/web/page.html
-- [ ] T010 [US2] Update convert-web-to-apim.ps1 to generate single page-template.xml fragment in infrastructure/scripts/convert-web-to-apim.ps1
-- [ ] T011 [US2] Generate page-template.xml fragment by running updated convert-web-to-apim.ps1 (output: infrastructure/modules/apim/fragments/page-template.xml)
-- [ ] T012 [US2] Update page-routing-policy.xml to serve shared page-template for all page numbers in infrastructure/modules/apim/policies/page-routing-policy.xml
-- [ ] T013 [US2] Update Bicep to register page-template fragment and remove old monolithic page-N fragment registrations in infrastructure/modules/apim/main.bicep
+- [X] T007 [P] [US2] Create content-renderer.js with fetch-based JSON loading and TXT TV rendering in src/web/scripts/content-renderer.js
+- [X] T008 [P] [US2] Update page-template.html with dynamic content loading placeholder and script references in src/web/templates/page-template.html
+- [X] T009 [P] [US2] Update page.html for local development content loading in src/web/page.html
+- [X] T010 [US2] Update convert-web-to-apim.ps1 to generate single page-template.xml fragment in infrastructure/scripts/convert-web-to-apim.ps1
+- [X] T011 [US2] Generate page-template.xml fragment by running updated convert-web-to-apim.ps1 (output: infrastructure/modules/apim/fragments/page-template.xml)
+- [X] T012 [US2] Update page-routing-policy.xml to serve shared page-template for all page numbers in infrastructure/modules/apim/policies/page-routing-policy.xml
+- [X] T013 [US2] Update Bicep to register page-template fragment and remove old monolithic page-N fragment registrations in infrastructure/modules/apim/main.bicep
 
 ### Task Details — Phase 4
 
@@ -184,7 +184,7 @@ No foundational phase tasks are required. The JSON content files created in Setu
 
 ### Implementation for User Story 3
 
-- [ ] T014 [US3] Rewrite start-dev-server.ps1 with PowerShell HttpListener serving HTML and JSON content in infrastructure/scripts/start-dev-server.ps1
+- [X] T014 [US3] Rewrite start-dev-server.ps1 with PowerShell HttpListener serving HTML and JSON content in infrastructure/scripts/start-dev-server.ps1
 
 ### Task Details — Phase 5
 
@@ -212,13 +212,13 @@ No foundational phase tasks are required. The JSON content files created in Setu
 
 **Purpose**: Update existing test suites for the new two-API architecture, clean up superseded files, and validate the developer workflow.
 
-- [ ] T015 [P] Update fragment-validation.tests.ps1 to validate content fragment XML structure in tests/policies/fragment-validation.tests.ps1
-- [ ] T016 [P] Update policy-validation.tests.ps1 to validate content routing policy in tests/policies/policy-validation.tests.ps1
-- [ ] T017 [P] Update WAF SQL injection tests to cover Content API endpoint in tests/security/waf-sql-injection.tests.ps1
-- [ ] T018 [P] Update WAF XSS tests to cover Content API endpoint in tests/security/waf-xss.tests.ps1
-- [ ] T019 [P] Update page navigation integration tests for two-API fetch flow in tests/integration/page-navigation.tests.ps1
-- [ ] T020 Remove superseded .txt content files from content/pages/
-- [ ] T021 Run quickstart.md validation to verify end-to-end developer workflow
+- [X] T015 [P] Update fragment-validation.tests.ps1 to validate content fragment XML structure in tests/policies/fragment-validation.tests.ps1
+- [X] T016 [P] Update policy-validation.tests.ps1 to validate content routing policy in tests/policies/policy-validation.tests.ps1
+- [X] T017 [P] Update WAF SQL injection tests to cover Content API endpoint in tests/security/waf-sql-injection.tests.ps1
+- [X] T018 [P] Update WAF XSS tests to cover Content API endpoint in tests/security/waf-xss.tests.ps1
+- [X] T019 [P] Update page navigation integration tests for two-API fetch flow in tests/integration/page-navigation.tests.ps1
+- [X] T020 Remove superseded .txt content files from content/pages/
+- [X] T021 Run quickstart.md validation to verify end-to-end developer workflow
 
 ### Task Details — Phase 6
 

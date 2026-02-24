@@ -1,0 +1,61 @@
+{
+  "name": "get-content",
+  "displayName": "Get Content",
+  "description": "Retrieve structured JSON content for a specific TXT TV page by page number. Returns the content payload including title, category, severity, content text, metadata, and navigation links.",
+  "method": "GET",
+  "urlTemplate": "/content/{pageNumber}",
+  "templateParameters": [
+    {
+      "name": "pageNumber",
+      "type": "integer",
+      "required": true,
+      "description": "Page number to retrieve content for (100-999)"
+    }
+  ],
+  "request": {
+    "description": "Request to retrieve structured JSON content for a TXT TV page"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "JSON content payload for the requested page",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "type": "string",
+          "values": ["application/json"]
+        },
+        {
+          "name": "Cache-Control",
+          "type": "string",
+          "values": ["public, max-age=3600"]
+        }
+      ]
+    },
+    {
+      "statusCode": 400,
+      "description": "Invalid page number (not a 3-digit integer)",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "type": "string",
+          "values": ["application/json"]
+        }
+      ]
+    },
+    {
+      "statusCode": 404,
+      "description": "Page number not found in content set",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "type": "string",
+          "values": ["application/json"]
+        }
+      ]
+    }
+  ],
+  "policies": {
+    "inbound": "content-routing-policy.xml"
+  }
+}

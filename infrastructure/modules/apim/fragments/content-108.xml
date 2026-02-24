@@ -1,0 +1,26 @@
+<fragment>
+    <return-response>
+        <set-status code="200" reason="OK" />
+        <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+        </set-header>
+        <set-header name="Cache-Control" exists-action="override">
+            <value>public, max-age=3600</value>
+        </set-header>
+        <set-body><![CDATA[{
+  "pageNumber": 108,
+  "title": "Lifestyle & Wellness Tips",
+  "category": "NEWS",
+  "severity": null,
+  "content": "LIFESTYLE\n═════════════════════════════════════════════════\n\nHealth & Wellness\n─────────────────\nNew study highlights benefits of\nregular outdoor exercise.\n\nFood & Cooking\n──────────────\nSummer recipes featuring fresh\nseasonal ingredients.\n\nTravel\n──────\nTop destinations for budget-friendly\nfamily vacations revealed.\n\nHome & Garden\n─────────────\nTips for maintaining gardens during\nthe hot summer months.",
+  "metadata": {
+    "published": "2026-02-09T16:00:00Z"
+  },
+  "navigation": {
+    "prev": 107,
+    "next": 109,
+    "related": [107]
+  }
+}]]></set-body>
+    </return-response>
+</fragment>

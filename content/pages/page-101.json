@@ -1,0 +1,16 @@
+{
+  "pageNumber": 101,
+  "title": "CVE-2026-12345 - Technical Deep Dive",
+  "category": "VULNERABILITY",
+  "severity": "CRITICAL",
+  "content": "VULNERABILITY ANALYSIS: Struts RCE\n═════════════════════════════════════════════════\n\nROOT CAUSE:\nImproperly validated OGNL expressions in the\nContent-Type header parser allows injection of\narbitrary Java code during multipart request\nprocessing.\n\nEXPLOIT VECTOR:\nPOST /upload HTTP/1.1\nContent-Type: %{(#_='multipart/form-data')\n.(#cmd='calc').(#iswin=(@java.lang.System@\ngetProperty('os.name').toLowerCase().contains\n('win')))...}\n\nPAYLOAD CHARACTERISTICS:\n• No authentication required\n• Works through reverse proxies\n• Bypasses basic WAF regex filters\n• Can execute OS commands directly\n\nDETECTION INDICATORS:\n→ Unusual Content-Type headers (>200 chars)\n→ OGNL expression patterns: %{, #, @java\n→ Outbound connections to unexpected IPs\n→ New processes spawned by Java\n\nPATCH DETAILS:\nStruts 2.6.5 validates Content-Type against\nstrict allowlist before OGNL evaluation.",
+  "metadata": {
+    "cvss": 9.8,
+    "published": "2026-02-09T10:30:00Z"
+  },
+  "navigation": {
+    "prev": 100,
+    "next": 102,
+    "related": [100, 102, 103]
+  }
+}
