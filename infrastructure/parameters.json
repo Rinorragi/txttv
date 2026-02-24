@@ -16,6 +16,9 @@
     },
     "apimPublisherName": {
       "value": "TXT TV Development Team"
+    },
+    "existingAppGatewayIp": {
+      "value": "4.223.116.183"
     }
   }
 }

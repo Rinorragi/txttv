@@ -10,9 +10,6 @@ param location string = resourceGroup().location
 @description('Tags to apply to resources')
 param tags object = {}
 
-@description('The name of the storage account for the Function App')
-param storageAccountName string
-
 @description('The connection string for the storage account')
 @secure()
 param storageConnectionString string
@@ -22,13 +19,12 @@ param storageConnectionString string
 param appInsightsConnectionString string = ''
 
 // App Service Plan (Consumption)
-resource hostingPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
+resource hostingPlan 'Microsoft.Web/serverfarms@2025-03-01' = {
   name: '${functionAppName}-plan'
   location: location
   tags: tags
   sku: {
-    name: 'Y1'
-    tier: 'Dynamic'
+    name: 'B1'
   }
   properties: {
     reserved: false // Windows
@@ -36,7 +32,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
 }
 
 // Function App
-resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
+resource functionApp 'Microsoft.Web/sites@2025-03-01' = {
   name: functionAppName
   location: location
   tags: tags
@@ -47,10 +43,32 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   properties: {
     serverFarmId: hostingPlan.id
     httpsOnly: true
+    publicNetworkAccess: 'Enabled'
     siteConfig: {
       netFrameworkVersion: 'v10.0'
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
+      ipSecurityRestrictions: [
+        {
+          ipAddress: 'ApiManagement'
+          action: 'Allow'
+          tag: 'ServiceTag'
+          priority: 100
+          name: 'Allow-APIM'
+          description: 'Allow traffic from API Management'
+        }
+      ]
+      ipSecurityRestrictionsDefaultAction: 'Deny'
+      scmIpSecurityRestrictions: [
+        {
+          ipAddress: 'Any'
+          action: 'Allow'
+          priority: 100
+          name: 'Allow-All-SCM'
+          description: 'Allow SCM/Kudu access for deployment'
+        }
+      ]
+      scmIpSecurityRestrictionsDefaultAction: 'Allow'
       appSettings: [
         {
           name: 'AzureWebJobsStorage'

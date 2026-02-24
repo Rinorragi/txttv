@@ -492,3 +492,4 @@ $RECYCLE.BIN/
 # Local web development
 *.log
 src/web/.DS_Store
+infrastructure/parameters.json

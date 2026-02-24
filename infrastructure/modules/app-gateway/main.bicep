@@ -35,7 +35,7 @@ param vnetName string
 param subnetName string = 'appgw-subnet'
 
 @description('Address prefix for the virtual network')
-param vnetAddressPrefix string = '10.0.0.0/16'
+param vnetAddressPrefix string = '10.0.0.0/22'
 
 @description('Address prefix for the Application Gateway subnet')
 param subnetAddressPrefix string = '10.0.1.0/24'
@@ -44,7 +44,7 @@ param subnetAddressPrefix string = '10.0.1.0/24'
 param logAnalyticsWorkspaceId string = ''
 
 // Virtual Network
-resource vnet 'Microsoft.Network/virtualNetworks@2023-11-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2025-05-01' = {
   name: vnetName
   location: location
   tags: tags
@@ -67,7 +67,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-11-01' = {
 }
 
 // Public IP for Application Gateway
-resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
+resource publicIp 'Microsoft.Network/publicIPAddresses@2025-05-01' = {
   name: '${appGatewayName}-pip'
   location: location
   tags: tags
@@ -87,7 +87,7 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
 var apimHostname = replace(replace(apimGatewayUrl, 'https://', ''), 'http://', '')
 
 // Application Gateway
-resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
+resource appGateway 'Microsoft.Network/applicationGateways@2025-05-01' = {
   name: appGatewayName
   location: location
   tags: tags

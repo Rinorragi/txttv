@@ -26,6 +26,9 @@ param appInsightsInstrumentationKey string = ''
 @description('Backend Function App URL')
 param backendFunctionUrl string = ''
 
+@description('Application Gateway public IP for access restriction')
+param appGatewayPublicIp string = ''
+
 @description('APIM SKU name')
 @allowed([
   'Consumption'
@@ -37,7 +40,7 @@ param backendFunctionUrl string = ''
 param skuName string = 'Developer'
 
 // APIM Instance (Developer tier for dev/test environment)
-resource apim 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
+resource apim 'Microsoft.ApiManagement/service@2024-05-01' = {
   name: apimName
   location: location
   tags: tags
@@ -55,7 +58,7 @@ resource apim 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
 }
 
 // Application Insights Logger
-resource apimLogger 'Microsoft.ApiManagement/service/loggers@2023-09-01-preview' = if (!empty(appInsightsId)) {
+resource apimLogger 'Microsoft.ApiManagement/service/loggers@2024-05-01' = if (!empty(appInsightsId)) {
   parent: apim
   name: 'appinsights-logger'
   properties: {
@@ -68,7 +71,7 @@ resource apimLogger 'Microsoft.ApiManagement/service/loggers@2023-09-01-preview'
 }
 
 // TXT TV API
-resource txttvApi 'Microsoft.ApiManagement/service/apis@2023-09-01-preview' = {
+resource txttvApi 'Microsoft.ApiManagement/service/apis@2024-05-01' = {
   parent: apim
   name: 'txttv-api'
   properties: {
@@ -84,7 +87,7 @@ resource txttvApi 'Microsoft.ApiManagement/service/apis@2023-09-01-preview' = {
 }
 
 // GET /page/{pageNumber} - Main page rendering operation
-resource getPageOperation 'Microsoft.ApiManagement/service/apis/operations@2023-09-01-preview' = {
+resource getPageOperation 'Microsoft.ApiManagement/service/apis/operations@2024-05-01' = {
   parent: txttvApi
   name: 'get-page'
   properties: {
@@ -118,7 +121,7 @@ resource getPageOperation 'Microsoft.ApiManagement/service/apis/operations@2023-
 }
 
 // GET / - Home page redirect
-resource getHomeOperation 'Microsoft.ApiManagement/service/apis/operations@2023-09-01-preview' = {
+resource getHomeOperation 'Microsoft.ApiManagement/service/apis/operations@2024-05-01' = {
   parent: txttvApi
   name: 'get-home'
   properties: {
@@ -135,7 +138,7 @@ resource getHomeOperation 'Microsoft.ApiManagement/service/apis/operations@2023-
 }
 
 // GET /backend-test - Backend connectivity test
-resource getBackendTestOperation 'Microsoft.ApiManagement/service/apis/operations@2023-09-01-preview' = {
+resource getBackendTestOperation 'Microsoft.ApiManagement/service/apis/operations@2024-05-01' = {
   parent: txttvApi
   name: 'get-backend-test'
   properties: {
@@ -157,7 +160,7 @@ resource getBackendTestOperation 'Microsoft.ApiManagement/service/apis/operation
 }
 
 // Backend for Function App
-resource functionBackend 'Microsoft.ApiManagement/service/backends@2023-09-01-preview' = if (!empty(backendFunctionUrl)) {
+resource functionBackend 'Microsoft.ApiManagement/service/backends@2024-05-01' = if (!empty(backendFunctionUrl)) {
   parent: apim
   name: 'function-backend'
   properties: {
@@ -168,6 +171,209 @@ resource functionBackend 'Microsoft.ApiManagement/service/backends@2023-09-01-pr
       validateCertificateChain: true
       validateCertificateName: true
     }
+  }
+}
+
+// Named Value for Function Backend URL
+resource namedValueFunctionUrl 'Microsoft.ApiManagement/service/namedValues@2024-05-01' = if (!empty(backendFunctionUrl)) {
+  parent: apim
+  name: 'function-backend-url'
+  properties: {
+    displayName: 'function-backend-url'
+    value: backendFunctionUrl
+    secret: false
+  }
+}
+
+// Named Value for App Gateway Public IP (for access restriction)
+// Always created - empty value allows all traffic, set after App Gateway deployment
+resource namedValueAppGwIp 'Microsoft.ApiManagement/service/namedValues@2024-05-01' = {
+  parent: apim
+  name: 'appgw-public-ip'
+  properties: {
+    displayName: 'appgw-public-ip'
+    value: !empty(appGatewayPublicIp) ? appGatewayPublicIp : ''
+    secret: false
+  }
+}
+
+// Policy Fragments
+resource fragmentPage100 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'page-100'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/page-100.xml')
+  }
+}
+
+resource fragmentPage101 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'page-101'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/page-101.xml')
+  }
+}
+
+resource fragmentPage102 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'page-102'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/page-102.xml')
+  }
+}
+
+resource fragmentPage103 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'page-103'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/page-103.xml')
+  }
+}
+
+resource fragmentPage104 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'page-104'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/page-104.xml')
+  }
+}
+
+resource fragmentPage105 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'page-105'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/page-105.xml')
+  }
+}
+
+resource fragmentPage106 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'page-106'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/page-106.xml')
+  }
+}
+
+resource fragmentPage107 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'page-107'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/page-107.xml')
+  }
+}
+
+resource fragmentPage108 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'page-108'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/page-108.xml')
+  }
+}
+
+resource fragmentPage109 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'page-109'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/page-109.xml')
+  }
+}
+
+resource fragmentPage110 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'page-110'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/page-110.xml')
+  }
+}
+
+resource fragmentErrorPage 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'error-page'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/error-page.xml')
+  }
+}
+
+resource fragmentNavigationTemplate 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'navigation-template'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/navigation-template.xml')
+  }
+}
+
+// Global Policy
+resource globalPolicy 'Microsoft.ApiManagement/service/policies@2024-05-01' = {
+  parent: apim
+  name: 'policy'
+  properties: {
+    format: 'rawxml'
+    value: loadTextContent('policies/global-policy.xml')
+  }
+  dependsOn: [
+    namedValueAppGwIp
+  ]
+}
+
+// Operation Policy for get-page
+resource getPagePolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2024-05-01' = {
+  parent: getPageOperation
+  name: 'policy'
+  properties: {
+    format: 'rawxml'
+    value: loadTextContent('policies/page-routing-policy.xml')
+  }
+  dependsOn: [
+    fragmentPage100
+    fragmentPage101
+    fragmentPage102
+    fragmentPage103
+    fragmentPage104
+    fragmentPage105
+    fragmentPage106
+    fragmentPage107
+    fragmentPage108
+    fragmentPage109
+    fragmentPage110
+    fragmentErrorPage
+    fragmentNavigationTemplate
+  ]
+}
+
+// Operation Policy for get-backend-test
+resource getBackendTestPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2024-05-01' = if (!empty(backendFunctionUrl)) {
+  parent: getBackendTestOperation
+  name: 'policy'
+  properties: {
+    format: 'rawxml'
+    value: loadTextContent('policies/backend-policy.xml')
+  }
+  dependsOn: [
+    namedValueFunctionUrl
+    functionBackend
+  ]
+}
+
+// Operation Policy for get-home (redirect to page 100)
+resource getHomePolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2024-05-01' = {
+  parent: getHomeOperation
+  name: 'policy'
+  properties: {
+    format: 'rawxml'
+    value: loadTextContent('policies/home-redirect-policy.xml')
   }
 }
 

@@ -1,5 +1,13 @@
-﻿<fragment>
-  <set-body><![CDATA[<!DOCTYPE html>
+<fragment>
+    <return-response>
+        <set-status code="200" reason="OK" />
+        <set-header name="Content-Type" exists-action="override">
+            <value>text/html; charset=utf-8</value>
+        </set-header>
+        <set-header name="Cache-Control" exists-action="override">
+            <value>public, max-age=300</value>
+        </set-header>
+        <set-body><![CDATA[<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -677,4 +685,5 @@ Return to [Index](index.html)
 </body>
 </html>
 ]]></set-body>
+    </return-response>
 </fragment>
