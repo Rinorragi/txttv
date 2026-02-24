@@ -1,0 +1,27 @@
+<fragment>
+    <return-response>
+        <set-status code="200" reason="OK" />
+        <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+        </set-header>
+        <set-header name="Cache-Control" exists-action="override">
+            <value>public, max-age=3600</value>
+        </set-header>
+        <set-body><![CDATA[{
+  "pageNumber": 102,
+  "title": "Emergency Mitigation Steps - CVE-2026-12345",
+  "category": "INCIDENT",
+  "severity": "CRITICAL",
+  "content": "IMMEDIATE ACTIONS (Next 2 Hours)\n═════════════════════════════════════════════════\n\n1. IDENTIFY AFFECTED SYSTEMS\n   $ find / -name \"struts*.jar\" 2>/dev/null\n   $ grep -r \"struts-core-2\" /opt /var\n   Check versions: 2.5.0 - 2.6.4 are vulnerable\n\n2. TEMPORARY WAF RULES (If patching delayed)\n   Block Content-Type headers containing:\n   • %{ or ${\n   • #_= or @java\n   • Length > 100 characters\n   • Multiple semicolons\n\n3. NETWORK SEGMENTATION\n   • Isolate affected apps from sensitive data\n   • Enable aggressive outbound filtering\n   • Monitor for reverse shell attempts\n\n4. ENABLE VERBOSE LOGGING\n   Set: struts.devMode=false\n        struts.i18n.encoding=UTF-8\n   Log all Content-Type headers >50 chars\n\n5. PATCH DEPLOYMENT\n   Test: QA environment first (2-4 hours)\n   Deploy: Staged rollout to production\n   Verify: No OGNL evaluation in logs\n\nFALLBACK: Downgrade to Struts 2.3.37 (LTS)",
+  "metadata": {
+    "cvss": 9.8,
+    "published": "2026-02-09T12:00:00Z"
+  },
+  "navigation": {
+    "prev": 101,
+    "next": 103,
+    "related": [100, 101, 103, 105]
+  }
+}]]></set-body>
+    </return-response>
+</fragment>

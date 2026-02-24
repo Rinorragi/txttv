@@ -11,6 +11,8 @@ Auto-generated from all feature plans. Last updated: 2026-01-31
 - Log Analytics workspace (already configured with 30-day retention) (003-waf-logging)
 - HTML5/CSS3/JavaScript (ES6+) for web interface; PowerShell 7+ for conversion script + Node.js (for live-server local dev server with live reload); PowerShell 7+ for conversion (004-local-web-dev)
 - File-based (local: HTML/CSS/JS source files; Azure: existing Blob Storage for content) (004-local-web-dev)
+- PowerShell 7+ (conversion scripts, dev server), JavaScript ES6 (client-side renderer) + htmx 2.0.8 (CDN: jsdelivr), APIM policy XML schema, PowerShell System.Net.HttpListener (005-json-content-api)
+- Content stored as JSON files in repository (`content/pages/`), deployed as APIM policy fragments (no external storage service) (005-json-content-api)
 
 ## Project Structure
 
@@ -28,9 +30,9 @@ tests/
 .NET 8 F# (Azure Functions runtime v4): Follow standard conventions
 
 ## Recent Changes
+- 005-json-content-api: Added PowerShell 7+ (conversion scripts, dev server), JavaScript ES6 (client-side renderer) + htmx 2.0.8 (CDN: jsdelivr), APIM policy XML schema, PowerShell System.Net.HttpListener
 - 004-local-web-dev: Added HTML5/CSS3/JavaScript (ES6+) for web interface; PowerShell 7+ for conversion script + Node.js (for live-server local dev server with live reload); PowerShell 7+ for conversion
 - 003-waf-logging: Added Bicep (Azure native IaC DSL)
-- 002-deploy-test-utility: Added PowerShell 7+ for deployment scripts, .NET 10 F# for utility software + Azure CLI or PowerShell Az module, .NET SDK 10, existing Bicep modules
 
 
 <!-- MANUAL ADDITIONS START -->

@@ -1,0 +1,27 @@
+<fragment>
+    <return-response>
+        <set-status code="200" reason="OK" />
+        <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+        </set-header>
+        <set-header name="Cache-Control" exists-action="override">
+            <value>public, max-age=3600</value>
+        </set-header>
+        <set-body><![CDATA[{
+  "pageNumber": 100,
+  "title": "CVE-2026-12345 - Remote Code Execution",
+  "category": "SECURITY ALERT",
+  "severity": "CRITICAL",
+  "content": "BREAKING: Apache Struts Vulnerability Discovered\n═════════════════════════════════════════════════\nSecurity researchers discovered a critical remote\ncode execution vulnerability affecting Apache\nStruts 2.5.x through 2.6.4.\n\nIMPACT: Allows unauthenticated attackers to\nexecute arbitrary code on vulnerable servers.\n\nAFFECTED SYSTEMS:\n* Apache Struts 2.5.0 - 2.6.4\n* Est. 500,000+ servers worldwide\n* Healthcare, finance sectors most exposed\n\nRECOMMENDED ACTIONS:\n→ Update to Struts 2.6.5+ immediately\n→ Review logs for suspicious activity\n→ Implement WAF rules (see page 105)\n\nMore: Technical Analysis (101) | Mitigation (102)\n      Past Incidents (103) | WAF Config (105)",
+  "metadata": {
+    "cvss": 9.8,
+    "published": "2026-02-09T08:45:00Z"
+  },
+  "navigation": {
+    "prev": null,
+    "next": 101,
+    "related": [101, 102, 103, 105]
+  }
+}]]></set-body>
+    </return-response>
+</fragment>

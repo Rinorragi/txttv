@@ -1,0 +1,26 @@
+<fragment>
+    <return-response>
+        <set-status code="200" reason="OK" />
+        <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+        </set-header>
+        <set-header name="Cache-Control" exists-action="override">
+            <value>public, max-age=3600</value>
+        </set-header>
+        <set-body><![CDATA[{
+  "pageNumber": 107,
+  "title": "Business & Finance Summary",
+  "category": "NEWS",
+  "severity": null,
+  "content": "BUSINESS & FINANCE\n═════════════════════════════════════════════════\n\nStock Markets\n─────────────\nMarkets show steady gains amid\npositive economic indicators.\n\nCurrencies\n──────────\nEUR/USD exchange rate stabilizes\nafter week of volatility.\n\nCommodities\n───────────\nOil prices hold steady while gold\nsees moderate increase.\n\nReal Estate\n───────────\nHousing market shows signs of\ncooling in major cities.",
+  "metadata": {
+    "published": "2026-02-09T16:00:00Z"
+  },
+  "navigation": {
+    "prev": 106,
+    "next": 108,
+    "related": [108]
+  }
+}]]></set-body>
+    </return-response>
+</fragment>

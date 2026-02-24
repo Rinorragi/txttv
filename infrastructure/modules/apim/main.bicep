@@ -137,6 +137,44 @@ resource getHomeOperation 'Microsoft.ApiManagement/service/apis/operations@2024-
   }
 }
 
+// GET /content/{pageNumber} - JSON Content API
+resource getContentOperation 'Microsoft.ApiManagement/service/apis/operations@2024-05-01' = {
+  parent: txttvApi
+  name: 'get-content'
+  properties: {
+    displayName: 'Get Content'
+    method: 'GET'
+    urlTemplate: '/content/{pageNumber}'
+    templateParameters: [
+      {
+        name: 'pageNumber'
+        type: 'integer'
+        required: true
+        description: 'Page number (100-999)'
+      }
+    ]
+    responses: [
+      {
+        statusCode: 200
+        description: 'JSON content payload'
+        representations: [
+          {
+            contentType: 'application/json'
+          }
+        ]
+      }
+      {
+        statusCode: 400
+        description: 'Invalid page number'
+      }
+      {
+        statusCode: 404
+        description: 'Page not found'
+      }
+    ]
+  }
+}
+
 // GET /backend-test - Backend connectivity test
 resource getBackendTestOperation 'Microsoft.ApiManagement/service/apis/operations@2024-05-01' = {
   parent: txttvApi
@@ -198,102 +236,14 @@ resource namedValueAppGwIp 'Microsoft.ApiManagement/service/namedValues@2024-05-
 }
 
 // Policy Fragments
-resource fragmentPage100 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
-  parent: apim
-  name: 'page-100'
-  properties: {
-    format: 'xml'
-    value: loadTextContent('fragments/page-100.xml')
-  }
-}
 
-resource fragmentPage101 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+// Page Template (shared HTML shell - US2)
+resource fragmentPageTemplate 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
   parent: apim
-  name: 'page-101'
+  name: 'page-template'
   properties: {
     format: 'xml'
-    value: loadTextContent('fragments/page-101.xml')
-  }
-}
-
-resource fragmentPage102 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
-  parent: apim
-  name: 'page-102'
-  properties: {
-    format: 'xml'
-    value: loadTextContent('fragments/page-102.xml')
-  }
-}
-
-resource fragmentPage103 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
-  parent: apim
-  name: 'page-103'
-  properties: {
-    format: 'xml'
-    value: loadTextContent('fragments/page-103.xml')
-  }
-}
-
-resource fragmentPage104 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
-  parent: apim
-  name: 'page-104'
-  properties: {
-    format: 'xml'
-    value: loadTextContent('fragments/page-104.xml')
-  }
-}
-
-resource fragmentPage105 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
-  parent: apim
-  name: 'page-105'
-  properties: {
-    format: 'xml'
-    value: loadTextContent('fragments/page-105.xml')
-  }
-}
-
-resource fragmentPage106 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
-  parent: apim
-  name: 'page-106'
-  properties: {
-    format: 'xml'
-    value: loadTextContent('fragments/page-106.xml')
-  }
-}
-
-resource fragmentPage107 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
-  parent: apim
-  name: 'page-107'
-  properties: {
-    format: 'xml'
-    value: loadTextContent('fragments/page-107.xml')
-  }
-}
-
-resource fragmentPage108 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
-  parent: apim
-  name: 'page-108'
-  properties: {
-    format: 'xml'
-    value: loadTextContent('fragments/page-108.xml')
-  }
-}
-
-resource fragmentPage109 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
-  parent: apim
-  name: 'page-109'
-  properties: {
-    format: 'xml'
-    value: loadTextContent('fragments/page-109.xml')
-  }
-}
-
-resource fragmentPage110 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
-  parent: apim
-  name: 'page-110'
-  properties: {
-    format: 'xml'
-    value: loadTextContent('fragments/page-110.xml')
+    value: loadTextContent('fragments/page-template.xml')
   }
 }
 
@@ -312,6 +262,106 @@ resource fragmentNavigationTemplate 'Microsoft.ApiManagement/service/policyFragm
   properties: {
     format: 'xml'
     value: loadTextContent('fragments/navigation-template.xml')
+  }
+}
+
+// Content Fragments (JSON Content API - US1)
+resource fragmentContent100 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'content-100'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/content-100.xml')
+  }
+}
+
+resource fragmentContent101 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'content-101'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/content-101.xml')
+  }
+}
+
+resource fragmentContent102 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'content-102'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/content-102.xml')
+  }
+}
+
+resource fragmentContent103 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'content-103'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/content-103.xml')
+  }
+}
+
+resource fragmentContent104 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'content-104'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/content-104.xml')
+  }
+}
+
+resource fragmentContent105 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'content-105'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/content-105.xml')
+  }
+}
+
+resource fragmentContent106 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'content-106'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/content-106.xml')
+  }
+}
+
+resource fragmentContent107 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'content-107'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/content-107.xml')
+  }
+}
+
+resource fragmentContent108 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'content-108'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/content-108.xml')
+  }
+}
+
+resource fragmentContent109 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'content-109'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/content-109.xml')
+  }
+}
+
+resource fragmentContent110 'Microsoft.ApiManagement/service/policyFragments@2024-05-01' = {
+  parent: apim
+  name: 'content-110'
+  properties: {
+    format: 'xml'
+    value: loadTextContent('fragments/content-110.xml')
   }
 }
 
@@ -337,19 +387,7 @@ resource getPagePolicy 'Microsoft.ApiManagement/service/apis/operations/policies
     value: loadTextContent('policies/page-routing-policy.xml')
   }
   dependsOn: [
-    fragmentPage100
-    fragmentPage101
-    fragmentPage102
-    fragmentPage103
-    fragmentPage104
-    fragmentPage105
-    fragmentPage106
-    fragmentPage107
-    fragmentPage108
-    fragmentPage109
-    fragmentPage110
-    fragmentErrorPage
-    fragmentNavigationTemplate
+    fragmentPageTemplate
   ]
 }
 
@@ -375,6 +413,29 @@ resource getHomePolicy 'Microsoft.ApiManagement/service/apis/operations/policies
     format: 'rawxml'
     value: loadTextContent('policies/home-redirect-policy.xml')
   }
+}
+
+// Operation Policy for get-content (JSON Content API)
+resource getContentPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2024-05-01' = {
+  parent: getContentOperation
+  name: 'policy'
+  properties: {
+    format: 'rawxml'
+    value: loadTextContent('policies/content-routing-policy.xml')
+  }
+  dependsOn: [
+    fragmentContent100
+    fragmentContent101
+    fragmentContent102
+    fragmentContent103
+    fragmentContent104
+    fragmentContent105
+    fragmentContent106
+    fragmentContent107
+    fragmentContent108
+    fragmentContent109
+    fragmentContent110
+  ]
 }
 
 @description('The resource ID of the APIM instance')
